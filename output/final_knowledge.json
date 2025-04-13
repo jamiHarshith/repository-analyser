@@ -1,0 +1,2060 @@
+[
+  {
+    "purpose": "This code is for an ActorController in a Spring-based web application, responsible for handling HTTP requests related to actors, such as retrieving actor lists and details.",
+    "key_methods": [
+      {
+        "name": "getActors",
+        "signature": "public String getActors(ModelMap modelMap, @RequestParam(value = \"firstName\", defaultValue = \"ALL ACTORS\") String firstNameFilter, @RequestParam(value = \"lastName\", defaultValue = \"ALL ACTORS\") String lastNameFilter)",
+        "description": "Handles GET requests to /actors, retrieving a list of actors based on provided first and last name filters."
+      },
+      {
+        "name": "getActorFilmDetails",
+        "signature": "public String getActorFilmDetails(ModelMap modelMap, @RequestParam(value = \"id\") Integer id)",
+        "description": "Handles GET requests to /actors/details, retrieving details about an actor's films based on the provided actor ID."
+      },
+      {
+        "name": "findActorById",
+        "signature": "public Actor findActorById(Integer id)",
+        "description": "Retrieves an actor by their ID."
+      },
+      {
+        "name": "getActorFullNameFromID",
+        "signature": "public String getActorFullNameFromID(Integer id)",
+        "description": "Retrieves the full name of an actor based on their ID."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Dependency Injection is used through the @Autowired annotation to provide instances of FilmService and ActorService.",
+      "unusual_implementations": "The getActors method uses a series of if-else statements to determine which method to call on the actorService based on the provided filters. This could potentially be simplified or refactored for better readability and maintainability.",
+      "complexity": "The controller has a moderate level of complexity due to the multiple methods and conditional logic in the getActors method."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\ActorController.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code handles HTTP requests related to categories, providing functionality to retrieve all categories and category details.",
+    "key_methods": [
+      {
+        "name": "getCategories",
+        "signature": "(ModelMap modelMap)",
+        "description": "Retrieves all categories and adds them to the model map for display."
+      },
+      {
+        "name": "getCategoryDetails",
+        "signature": "(ModelMap modelMap, @RequestParam(value = \"id\") Integer id)",
+        "description": "Retrieves category details and films associated with the category by ID, adding them to the model map for display."
+      },
+      {
+        "name": "getCategoryById",
+        "signature": "(Integer id)",
+        "description": "Retrieves a category by its ID."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Dependency Injection (via @Autowired)",
+      "noteworthy_complexity": "The use of Spring annotations (@Controller, @GetMapping, @Autowired) simplifies the code but may introduce complexity for those unfamiliar with the framework.",
+      "unusual_implementations": "The getCategoryById method is not annotated with @GetMapping or @PostMapping, suggesting it may be intended for internal use within the controller or other parts of the application."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CategoryController.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java code is for a CustomerController class in a Spring-based web application, handling customer-related operations such as displaying customer information, rental history, and customer lists.",
+    "key_methods": [
+      {
+        "name": "currentUser",
+        "signature": "public String currentUser(ModelMap modelMap, HttpServletRequest request)",
+        "description": "Retrieves the current customer's information and rental history based on their email address."
+      },
+      {
+        "name": "getCustomers",
+        "signature": "public String getCustomers(ModelMap modelMap, @RequestParam(value = \"firstName\", defaultValue = \"ALL CUSTOMERS\") String firstNameFilter, @RequestParam(value = \"lastName\", defaultValue = \"ALL CUSTOMERS\") String lastNameFilter)",
+        "description": "Retrieves a list of customers based on optional first name and last name filters."
+      },
+      {
+        "name": "showUsersRentalHistory",
+        "signature": "public String showUsersRentalHistory(ModelMap modelMap, @PathVariable(name = \"id\") int id)",
+        "description": "Displays a customer's rental history based on their ID."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The code uses the Model-View-Controller (MVC) pattern, with the CustomerController handling requests and interacting with services to retrieve data.",
+      "unusual_implementations": "The code uses a combination of Spring annotations (e.g., @Autowired, @GetMapping) and Java-based services to manage data retrieval and business logic.",
+      "complexity": "The code has a moderate level of complexity due to the use of multiple services, annotations, and conditional logic to handle different scenarios."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CustomerController.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code is for a film controller in a Spring-based web application, handling film-related operations such as retrieving film lists, renting films, and managing film inventory.",
+    "key_methods": [
+      {
+        "name": "getFilms",
+        "signature": "public String getFilms(ModelMap modelMap, @RequestParam(value = \"title\", defaultValue = \"ALL FILMS\") String filter)",
+        "description": "Retrieves a list of films based on the provided filter and adds them to the model map."
+      },
+      {
+        "name": "getFilmDetails",
+        "signature": "public String getFilmDetails(ModelMap modelMap, @RequestParam(value = \"id\") Integer id)",
+        "description": "Retrieves the details of a film by its ID and adds them to the model map."
+      },
+      {
+        "name": "rentFilm",
+        "signature": "public String rentFilm(ModelMap modelMap, Principal principal, @PathVariable(\"filmid\") int filmid)",
+        "description": "Rents a film by its ID and adds a rental record to the database."
+      },
+      {
+        "name": "getFilmDetails (for owner)",
+        "signature": "public String getFilmDetails(ModelMap modelMap, @RequestParam(value = \"title\", defaultValue = \"ALL FILMS\") String filter)",
+        "description": "Retrieves a list of films for the owner to manage, including the count of available films."
+      },
+      {
+        "name": "showEditProductPage",
+        "signature": "public ModelAndView showEditProductPage(@PathVariable(name = \"id\") int id)",
+        "description": "Displays the edit film page for the film with the specified ID."
+      },
+      {
+        "name": "deleteProduct",
+        "signature": "public String deleteProduct(@PathVariable(name = \"id\") int id)",
+        "description": "Deletes a film by its ID and redirects to the manage films page."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The code uses the Model-View-Controller (MVC) design pattern, with the FilmController handling requests and interacting with the model (FilmService, InventoryService, etc.) and view (JSP pages).",
+      "complexity": "The code has a moderate level of complexity, with multiple methods and interactions between services. However, the logic is relatively straightforward and easy to follow.",
+      "unusual_implementations": "The use of @Autowired to inject dependencies into the controller is a common practice in Spring-based applications. The use of ModelMap and ModelAndView to handle data and views is also typical in Spring MVC."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\FilmController.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java code defines a Spring MVC controller for handling HTTP requests and returning corresponding view names.",
+    "key_methods": [
+      {
+        "name": "home",
+        "signature": "public String home()",
+        "description": "Handles HTTP requests to the root URL (/) and returns the 'home' view."
+      },
+      {
+        "name": "login",
+        "signature": "public String login()",
+        "description": "Handles HTTP requests to the '/login' URL and returns the 'login' view."
+      },
+      {
+        "name": "account",
+        "signature": "public String account()",
+        "description": "Handles HTTP requests to the '/account' URL and returns the 'account' view."
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "MVC (Model-View-Controller)",
+      "framework": "Spring MVC",
+      "noteworthy_implementation": "The use of @RequestMapping annotations to map HTTP requests to specific methods."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\MainController.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code defines a Spring MVC controller for handling staff-related operations, specifically for displaying the current staff user and related customer and inventory counts.",
+    "key_methods": [
+      {
+        "name": "StaffController",
+        "signature": "(StaffService staffService, CustomerService customerService, InventoryService inventoryService)",
+        "description": "Constructor for the StaffController, autowiring the required services."
+      },
+      {
+        "name": "currentUser",
+        "signature": "(ModelMap modelMap, HttpServletRequest request)",
+        "description": "Handles GET requests to the '/owner' endpoint, retrieving the current staff user and related customer and inventory counts, and adding them to the model map."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": [
+        "Dependency Injection (using @Autowired)",
+        "Model-View-Controller (MVC) pattern"
+      ],
+      "noteworthy_implementation": "The use of Spring's @Autowired annotation to inject dependencies, and the retrieval of the current user's username from the HttpServletRequest object."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\StaffController.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents an Actor entity, likely used in a database-driven application, with properties for actor ID, first name, last name, and last update timestamp.",
+    "key_methods": {
+      "getActorId": {
+        "signature": "public int getActorId()",
+        "description": "Returns the actor's ID."
+      },
+      "setActorId": {
+        "signature": "public void setActorId(int actorId)",
+        "description": "Sets the actor's ID."
+      },
+      "getFirstName": {
+        "signature": "public String getFirstName()",
+        "description": "Returns the actor's first name."
+      },
+      "setFirstName": {
+        "signature": "public void setFirstName(String firstName)",
+        "description": "Sets the actor's first name."
+      },
+      "getLastName": {
+        "signature": "public String getLastName()",
+        "description": "Returns the actor's last name."
+      },
+      "setLastName": {
+        "signature": "public void setLastName(String lastName)",
+        "description": "Sets the actor's last name."
+      },
+      "getLastUpdate": {
+        "signature": "public Timestamp getLastUpdate()",
+        "description": "Returns the timestamp of the last update."
+      },
+      "setLastUpdate": {
+        "signature": "public void setLastUpdate(Timestamp lastUpdate)",
+        "description": "Sets the timestamp of the last update."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Checks if the current object is equal to another object based on actor ID, first name, last name, and last update timestamp."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code based on actor ID, first name, last name, and last update timestamp."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "This class uses the Java Persistence API (JPA) annotations for database mapping.",
+      "unusual_implementations": "The equals and hashCode methods are overridden to provide custom equality checks and hash code generation based on the object's properties.",
+      "complexity": "The class has a moderate level of complexity due to the use of JPA annotations and custom equality checks."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Actor.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents a Category entity, likely used in a database-driven application, with properties for category ID, name, and last update timestamp.",
+    "key_methods": {
+      "getCategoryId": {
+        "signature": "public int getCategoryId()",
+        "description": "Returns the category ID."
+      },
+      "setCategoryId": {
+        "signature": "public void setCategoryId(int categoryId)",
+        "description": "Sets the category ID."
+      },
+      "getName": {
+        "signature": "public String getName()",
+        "description": "Returns the category name."
+      },
+      "setName": {
+        "signature": "public void setName(String name)",
+        "description": "Sets the category name."
+      },
+      "getLastUpdate": {
+        "signature": "public Timestamp getLastUpdate()",
+        "description": "Returns the last update timestamp."
+      },
+      "setLastUpdate": {
+        "signature": "public void setLastUpdate(Timestamp lastUpdate)",
+        "description": "Sets the last update timestamp."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Checks if the current object is equal to another object based on category ID, name, and last update timestamp."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code for the current object based on category ID, name, and last update timestamp."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "The class uses Java Persistence API (JPA) annotations for database mapping.",
+      "unusual_implementations": "The equals and hashCode methods are overridden to provide custom equality checks based on the object's properties.",
+      "complexity": "The class has a moderate level of complexity due to the use of JPA annotations and custom equality checks."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Category.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java code defines an entity class named Customer, which represents a customer in a database. It includes fields for customer ID, first name, last name, email, active status, creation date, and last update date, along with getter and setter methods for these fields.",
+    "key_methods": [
+      {
+        "name": "getCustomerId",
+        "signature": "() -> int",
+        "description": "Returns the customer ID."
+      },
+      {
+        "name": "setCustomerId",
+        "signature": "(int) -> void",
+        "description": "Sets the customer ID."
+      },
+      {
+        "name": "getFirstName",
+        "signature": "() -> String",
+        "description": "Returns the customer's first name."
+      },
+      {
+        "name": "setFirstName",
+        "signature": "(String) -> void",
+        "description": "Sets the customer's first name."
+      },
+      {
+        "name": "getLastName",
+        "signature": "() -> String",
+        "description": "Returns the customer's last name."
+      },
+      {
+        "name": "setLastName",
+        "signature": "(String) -> void",
+        "description": "Sets the customer's last name."
+      },
+      {
+        "name": "getEmail",
+        "signature": "() -> String",
+        "description": "Returns the customer's email."
+      },
+      {
+        "name": "setEmail",
+        "signature": "(String) -> void",
+        "description": "Sets the customer's email."
+      },
+      {
+        "name": "getActive",
+        "signature": "() -> byte",
+        "description": "Returns the customer's active status."
+      },
+      {
+        "name": "setActive",
+        "signature": "(byte) -> void",
+        "description": "Sets the customer's active status."
+      },
+      {
+        "name": "getCreateDate",
+        "signature": "() -> Timestamp",
+        "description": "Returns the customer's creation date."
+      },
+      {
+        "name": "setCreateDate",
+        "signature": "(Timestamp) -> void",
+        "description": "Sets the customer's creation date."
+      },
+      {
+        "name": "getLastUpdate",
+        "signature": "() -> Timestamp",
+        "description": "Returns the customer's last update date."
+      },
+      {
+        "name": "setLastUpdate",
+        "signature": "(Timestamp) -> void",
+        "description": "Sets the customer's last update date."
+      },
+      {
+        "name": "equals",
+        "signature": "(Object) -> boolean",
+        "description": "Checks if two Customer objects are equal based on their fields."
+      },
+      {
+        "name": "hashCode",
+        "signature": "() -> int",
+        "description": "Returns a hash code for the Customer object based on its fields."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "This class uses the Java Persistence API (JPA) annotations to define the mapping between the Java class and the database table.",
+      "unusual_implementations": "The equals and hashCode methods are overridden to provide a custom implementation for comparing Customer objects.",
+      "complexity": "The complexity of this class is relatively low, as it primarily consists of getter and setter methods for the fields, along with the overridden equals and hashCode methods."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Customer.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents a Film entity, likely used in a database-driven application, with attributes and methods for accessing and modifying film data.",
+    "key_methods": {
+      "getFilmId": {
+        "signature": "public int getFilmId()",
+        "description": "Returns the unique identifier of the film."
+      },
+      "setTitle": {
+        "signature": "public void setTitle(String title)",
+        "description": "Sets the title of the film."
+      },
+      "getDescription": {
+        "signature": "public String getDescription()",
+        "description": "Returns the description of the film."
+      },
+      "setReleaseYear": {
+        "signature": "public void setReleaseYear(int releaseYear)",
+        "description": "Sets the release year of the film."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Compares this film object with another object for equality."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code value for this film object."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "The class uses the Java Persistence API (JPA) annotations for database mapping, following the Entity-Relationship model.",
+      "unusual_implementations": "The class overrides the equals and hashCode methods to provide custom comparison and hashing logic.",
+      "complexity": "The class has a moderate level of complexity due to the number of attributes and methods, but the logic is straightforward and easy to follow."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Film.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents an entity for the film_actor table in the Sakila database, mapping to a many-to-many relationship between films and actors.",
+    "key_methods": {
+      "getActorId": {
+        "signature": "public int getActorId()",
+        "description": "Returns the actor ID of the film-actor relationship."
+      },
+      "setActorId": {
+        "signature": "public void setActorId(int actorId)",
+        "description": "Sets the actor ID of the film-actor relationship."
+      },
+      "getFilmId": {
+        "signature": "public int getFilmId()",
+        "description": "Returns the film ID of the film-actor relationship."
+      },
+      "setFilmId": {
+        "signature": "public void setFilmId(int filmId)",
+        "description": "Sets the film ID of the film-actor relationship."
+      },
+      "getLastUpdate": {
+        "signature": "public Timestamp getLastUpdate()",
+        "description": "Returns the timestamp of the last update to the film-actor relationship."
+      },
+      "setLastUpdate": {
+        "signature": "public void setLastUpdate(Timestamp lastUpdate)",
+        "description": "Sets the timestamp of the last update to the film-actor relationship."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Compares this film-actor relationship with another object for equality."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code for this film-actor relationship."
+      }
+    },
+    "complexity_notes": {
+      "design_pattern": "Entity-Relationship Model",
+      "complexity": "Low to Moderate",
+      "unusual_implementations": "The use of @IdClass to define a composite primary key for the film_actor table.",
+      "notations": "The class uses Java Persistence API (JPA) annotations to map the entity to the database table."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmActor.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents a composite primary key for a many-to-many relationship between Film and Actor entities in a database.",
+    "key_methods": {
+      "getActorId": {
+        "signature": "(Integer) getActorId()",
+        "description": "Returns the actor ID of the composite primary key."
+      },
+      "setActorId": {
+        "signature": "void setActorId(int actorId)",
+        "description": "Sets the actor ID of the composite primary key."
+      },
+      "getFilmId": {
+        "signature": "(int) getFilmId()",
+        "description": "Returns the film ID of the composite primary key."
+      },
+      "setFilmId": {
+        "signature": "void setFilmId(int filmId)",
+        "description": "Sets the film ID of the composite primary key."
+      },
+      "equals": {
+        "signature": "(boolean) equals(Object o)",
+        "description": "Checks if the current object is equal to the given object based on the actor ID and film ID."
+      },
+      "hashCode": {
+        "signature": "(int) hashCode()",
+        "description": "Returns a hash code value for the object based on the actor ID and film ID."
+      }
+    },
+    "complexity_notes": {
+      "design_pattern": "Composite Primary Key",
+      "complexity": "Low to Moderate",
+      "unusual_implementation": "The use of both int and Integer types for the film ID and actor ID respectively, may lead to potential issues with null values."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmActorPK.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents an entity for the film_category table in the Sakila database, mapping film IDs to category IDs with a timestamp for the last update.",
+    "key_methods": {
+      "getFilmId": {
+        "signature": "() -> int",
+        "description": "Returns the film ID."
+      },
+      "setFilmId": {
+        "signature": "(Integer) -> void",
+        "description": "Sets the film ID."
+      },
+      "getCategoryId": {
+        "signature": "() -> int",
+        "description": "Returns the category ID."
+      },
+      "setCategoryId": {
+        "signature": "(Integer) -> void",
+        "description": "Sets the category ID."
+      },
+      "getLastUpdate": {
+        "signature": "() -> Timestamp",
+        "description": "Returns the timestamp of the last update."
+      },
+      "setLastUpdate": {
+        "signature": "(Timestamp) -> void",
+        "description": "Sets the timestamp of the last update."
+      },
+      "equals": {
+        "signature": "(Object) -> boolean",
+        "description": "Checks if this object is equal to another object based on film ID, category ID, and last update."
+      },
+      "hashCode": {
+        "signature": "() -> int",
+        "description": "Returns a hash code based on film ID, category ID, and last update."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "This class uses the Java Persistence API (JPA) annotations for object-relational mapping.",
+      "unusual_implementations": "The class uses a composite primary key (FilmCategoryPK) and overrides the equals and hashCode methods for proper comparison and hashing.",
+      "complexity": "The complexity of this class is relatively low, with a straightforward implementation of getters, setters, and overridden methods."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmCategory.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents a composite primary key for a film category entity, used in a database context.",
+    "key_methods": {
+      "getFilmId": {
+        "signature": "public int getFilmId()",
+        "description": "Returns the film ID part of the composite primary key."
+      },
+      "setFilmId": {
+        "signature": "public void setFilmId(int filmId)",
+        "description": "Sets the film ID part of the composite primary key."
+      },
+      "getCategoryId": {
+        "signature": "public int getCategoryId()",
+        "description": "Returns the category ID part of the composite primary key."
+      },
+      "setCategoryId": {
+        "signature": "public void setCategoryId(int categoryId)",
+        "description": "Sets the category ID part of the composite primary key."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Compares this object with another for equality based on film ID and category ID."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code based on the film ID and category ID."
+      }
+    },
+    "complexity_notes": {
+      "design_pattern": "JavaBean",
+      "noteworthy_implementation": "The class implements Serializable and overrides equals and hashCode methods for proper comparison and storage.",
+      "complexity": "Low to moderate due to the simple nature of the class and its methods."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmCategoryPK.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents an entity for the 'film_text' table in the 'sakila' schema, mapping film metadata.",
+    "key_methods": {
+      "getFilmId": {
+        "signature": "public int getFilmId()",
+        "description": "Returns the film ID."
+      },
+      "setFilmId": {
+        "signature": "public void setFilmId(int filmId)",
+        "description": "Sets the film ID."
+      },
+      "getTitle": {
+        "signature": "public String getTitle()",
+        "description": "Returns the film title."
+      },
+      "setTitle": {
+        "signature": "public void setTitle(String title)",
+        "description": "Sets the film title."
+      },
+      "getDescription": {
+        "signature": "public String getDescription()",
+        "description": "Returns the film description."
+      },
+      "setDescription": {
+        "signature": "public void setDescription(String description)",
+        "description": "Sets the film description."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Checks if two FilmText objects are equal based on their properties."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code for the FilmText object based on its properties."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "This class follows the JavaBean design pattern, with private fields and public getter and setter methods.",
+      "annotations": "The class uses Java Persistence API (JPA) annotations to map the class to a database table.",
+      "unusual_implementations": "The equals and hashCode methods are overridden to provide custom equality checks and hash code generation based on the object's properties."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmText.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents an entity for storing inventory data, specifically for a film rental system, using Java Persistence API (JPA) annotations.",
+    "key_methods": {
+      "getInventoryId": {
+        "signature": "public int getInventoryId()",
+        "description": "Returns the unique identifier for the inventory entry."
+      },
+      "setInventoryId": {
+        "signature": "public void setInventoryId(int inventoryId)",
+        "description": "Sets the unique identifier for the inventory entry."
+      },
+      "getFilmId": {
+        "signature": "public int getFilmId()",
+        "description": "Returns the identifier of the film associated with this inventory entry."
+      },
+      "setFilmId": {
+        "signature": "public void setFilmId(int filmId)",
+        "description": "Sets the identifier of the film associated with this inventory entry."
+      },
+      "getLastUpdate": {
+        "signature": "public Timestamp getLastUpdate()",
+        "description": "Returns the timestamp of the last update to this inventory entry."
+      },
+      "setLastUpdate": {
+        "signature": "public void setLastUpdate(Timestamp lastUpdate)",
+        "description": "Sets the timestamp of the last update to this inventory entry."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Compares this inventory object with another object for equality based on inventoryId and lastUpdate."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code value for this inventory object based on inventoryId and lastUpdate."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "This class follows the JavaBean design pattern, with private fields and public getter and setter methods.",
+      "annotations": "The class uses JPA annotations (@Entity, @Id, @Column, @Basic) to define the mapping between the Java class and the database table.",
+      "unusual_implementations": "The equals and hashCode methods are overridden to provide a custom comparison and hashing logic based on the inventoryId and lastUpdate fields."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Inventory.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "Represents an order entity in a video rental system, encapsulating customer, film, and rental information.",
+    "key_methods": [
+      {
+        "name": "Order",
+        "signature": "(Customer customer, Film film, Rental rental)",
+        "description": "Constructor to initialize an Order object with customer, film, and rental details."
+      },
+      {
+        "name": "getCustomer",
+        "signature": "()",
+        "description": "Returns the customer associated with the order."
+      },
+      {
+        "name": "setCustomer",
+        "signature": "(Customer customer)",
+        "description": "Sets the customer for the order."
+      },
+      {
+        "name": "getFilm",
+        "signature": "()",
+        "description": "Returns the film associated with the order."
+      },
+      {
+        "name": "setFilm",
+        "signature": "(Film film)",
+        "description": "Sets the film for the order."
+      },
+      {
+        "name": "getRental",
+        "signature": "()",
+        "description": "Returns the rental details associated with the order."
+      },
+      {
+        "name": "setRental",
+        "signature": "(Rental rental)",
+        "description": "Sets the rental details for the order."
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "Encapsulation",
+      "complexity": "Low",
+      "notes": "The class follows standard JavaBean conventions with private fields and public getter/setter methods. There are no complex algorithms or data structures used."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Order.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents a Rental entity, likely used in a database-driven application, with attributes and methods for managing rental information.",
+    "key_methods": [
+      {
+        "name": "getRentalId",
+        "signature": "()",
+        "description": "Returns the rental ID."
+      },
+      {
+        "name": "setRentalId",
+        "signature": "(int rentalId)",
+        "description": "Sets the rental ID."
+      },
+      {
+        "name": "getRentalDate",
+        "signature": "()",
+        "description": "Returns the rental date."
+      },
+      {
+        "name": "setRentalDate",
+        "signature": "(Timestamp rentalDate)",
+        "description": "Sets the rental date."
+      },
+      {
+        "name": "getInventoryId",
+        "signature": "()",
+        "description": "Returns the inventory ID."
+      },
+      {
+        "name": "setInventoryId",
+        "signature": "(int inventoryId)",
+        "description": "Sets the inventory ID."
+      },
+      {
+        "name": "getCustomerId",
+        "signature": "()",
+        "description": "Returns the customer ID."
+      },
+      {
+        "name": "setCustomerId",
+        "signature": "(int customerId)",
+        "description": "Sets the customer ID."
+      },
+      {
+        "name": "getReturnDate",
+        "signature": "()",
+        "description": "Returns the return date."
+      },
+      {
+        "name": "setReturnDate",
+        "signature": "(Timestamp returnDate)",
+        "description": "Sets the return date."
+      },
+      {
+        "name": "getStaffId",
+        "signature": "()",
+        "description": "Returns the staff ID."
+      },
+      {
+        "name": "setStaffId",
+        "signature": "(int staffId)",
+        "description": "Sets the staff ID."
+      },
+      {
+        "name": "getLastUpdate",
+        "signature": "()",
+        "description": "Returns the last update timestamp."
+      },
+      {
+        "name": "setLastUpdate",
+        "signature": "(Timestamp lastUpdate)",
+        "description": "Sets the last update timestamp."
+      },
+      {
+        "name": "equals",
+        "signature": "(Object o)",
+        "description": "Checks if the current object is equal to the given object."
+      },
+      {
+        "name": "hashCode",
+        "signature": "()",
+        "description": "Returns the hash code of the current object."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "This class uses the Java Persistence API (JPA) annotations to define the mapping between the Java class and the database table.",
+      "unusual_implementations": "The equals and hashCode methods are overridden to provide a custom implementation for comparing and hashing Rental objects.",
+      "complexity": "The class has a moderate level of complexity due to the use of JPA annotations and the custom implementation of equals and hashCode methods."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Rental.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class represents a Staff entity, likely used in a database-driven application, with properties and methods for accessing and modifying staff data.",
+    "key_methods": {
+      "getStaffId": {
+        "signature": "public int getStaffId()",
+        "description": "Returns the staff ID."
+      },
+      "setStaffId": {
+        "signature": "public void setStaffId(int staffId)",
+        "description": "Sets the staff ID."
+      },
+      "getFirstName": {
+        "signature": "public String getFirstName()",
+        "description": "Returns the first name of the staff member."
+      },
+      "setFirstName": {
+        "signature": "public void setFirstName(String firstName)",
+        "description": "Sets the first name of the staff member."
+      },
+      "getLastName": {
+        "signature": "public String getLastName()",
+        "description": "Returns the last name of the staff member."
+      },
+      "setLastName": {
+        "signature": "public void setLastName(String lastName)",
+        "description": "Sets the last name of the staff member."
+      },
+      "getPicture": {
+        "signature": "public byte[] getPicture()",
+        "description": "Returns the picture of the staff member as a byte array."
+      },
+      "setPicture": {
+        "signature": "public void setPicture(byte[] picture)",
+        "description": "Sets the picture of the staff member as a byte array."
+      },
+      "getEmail": {
+        "signature": "public String getEmail()",
+        "description": "Returns the email address of the staff member."
+      },
+      "setEmail": {
+        "signature": "public void setEmail(String email)",
+        "description": "Sets the email address of the staff member."
+      },
+      "getActive": {
+        "signature": "public byte getActive()",
+        "description": "Returns the active status of the staff member as a byte."
+      },
+      "setActive": {
+        "signature": "public void setActive(byte active)",
+        "description": "Sets the active status of the staff member as a byte."
+      },
+      "getUsername": {
+        "signature": "public String getUsername()",
+        "description": "Returns the username of the staff member."
+      },
+      "setUsername": {
+        "signature": "public void setUsername(String username)",
+        "description": "Sets the username of the staff member."
+      },
+      "getPassword": {
+        "signature": "public String getPassword()",
+        "description": "Returns the password of the staff member."
+      },
+      "setPassword": {
+        "signature": "public void setPassword(String password)",
+        "description": "Sets the password of the staff member."
+      },
+      "getLastUpdate": {
+        "signature": "public Timestamp getLastUpdate()",
+        "description": "Returns the last update timestamp of the staff member's data."
+      },
+      "setLastUpdate": {
+        "signature": "public void setLastUpdate(Timestamp lastUpdate)",
+        "description": "Sets the last update timestamp of the staff member's data."
+      },
+      "equals": {
+        "signature": "public boolean equals(Object o)",
+        "description": "Compares this staff object with another object for equality."
+      },
+      "hashCode": {
+        "signature": "public int hashCode()",
+        "description": "Returns a hash code value for this staff object."
+      }
+    },
+    "complexity_notes": {
+      "design_pattern": "This class follows the JavaBean design pattern, with private properties and public getter and setter methods.",
+      "complexity": "The complexity of this class is relatively low, with a simple and straightforward implementation of the Staff entity.",
+      "unusual_implementation": "The use of a byte array to store the picture of the staff member is unusual, as it would be more common to store the picture as a file or a URL."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Staff.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code defines a repository interface for managing Actor entities, providing methods for retrieving actors based on various criteria.",
+    "key_methods": [
+      {
+        "name": "findActorsByFirstNameAndLastName",
+        "signature": "(String firstName, String lastName)",
+        "description": "Retrieves a list of actors with the specified first and last names."
+      },
+      {
+        "name": "findActorsByFirstName",
+        "signature": "(String firstName)",
+        "description": "Retrieves a list of actors with the specified first name."
+      },
+      {
+        "name": "findActorsByLastName",
+        "signature": "(String lastName)",
+        "description": "Retrieves a list of actors with the specified last name."
+      },
+      {
+        "name": "getActorByActorId",
+        "signature": "(Integer id)",
+        "description": "Retrieves an actor by their ID."
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "Repository pattern",
+      "framework": "Spring Data JPA",
+      "note": "The interface extends JpaRepository, which provides basic CRUD operations. The custom methods are defined using Spring Data JPA's query method naming convention."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\ActorRepository.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code defines a repository interface for interacting with a database table related to categories, using Spring Data JPA.",
+    "key_methods": [
+      {
+        "name": "getCategoryByCategoryId",
+        "signature": "(Integer id)",
+        "description": "Retrieves a Category entity by its ID"
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "Repository pattern",
+      "framework": "Spring Data JPA",
+      "note": "The interface extends JpaRepository, which provides basic CRUD operations. The custom method getCategoryByCategoryId is a Spring Data JPA query method, where the method name is used to derive the query."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\CategoryRepository.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This interface defines a repository for Customer entities, providing methods for retrieving customers based on various criteria.",
+    "key_methods": [
+      {
+        "name": "getCustomerByCredentials",
+        "signature": "(String username, Integer password)",
+        "description": "Retrieves a customer by their email and customer ID (used as a password)."
+      },
+      {
+        "name": "getCustomerByUsername",
+        "signature": "(String username)",
+        "description": "Retrieves a customer by their email."
+      },
+      {
+        "name": "getCustomersByFirstName",
+        "signature": "(String firstName)",
+        "description": "Retrieves a list of customers by their first name."
+      },
+      {
+        "name": "getCustomersByLastName",
+        "signature": "(String lastName)",
+        "description": "Retrieves a list of customers by their last name."
+      },
+      {
+        "name": "getCustomersByFullName",
+        "signature": "(String firstName, String lastName)",
+        "description": "Retrieves a list of customers by their full name."
+      },
+      {
+        "name": "getCustomerByCustomerId",
+        "signature": "(Integer id)",
+        "description": "Retrieves a customer by their ID."
+      },
+      {
+        "name": "getCustomerByEmail",
+        "signature": "(String email)",
+        "description": "Retrieves a customer by their email."
+      },
+      {
+        "name": "getCustomerCount",
+        "signature": "()",
+        "description": "Retrieves the total count of customers."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Repository pattern",
+      "unusual_implementations": "Using customer ID as a password in getCustomerByCredentials method",
+      "complexity": "The interface uses Spring Data JPA to simplify database interactions, reducing complexity."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\CustomerRepository.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This interface provides data access methods for Film entities, allowing for CRUD operations and custom queries to retrieve films based on various criteria.",
+    "key_methods": [
+      {
+        "name": "getAvailableFilmCount",
+        "signature": "Integer getAvailableFilmCount(Integer id)",
+        "description": "Returns the count of available films with the given ID."
+      },
+      {
+        "name": "getAvailableFilms",
+        "signature": "List<Film> getAvailableFilms()",
+        "description": "Returns a list of all available films."
+      },
+      {
+        "name": "getAllFilmsByCategory",
+        "signature": "List<Film> getAllFilmsByCategory(Integer categoryId)",
+        "description": "Returns a list of films belonging to the specified category."
+      },
+      {
+        "name": "getAllFilmsByActor",
+        "signature": "List<Film> getAllFilmsByActor(Integer actorId)",
+        "description": "Returns a list of films featuring the specified actor."
+      },
+      {
+        "name": "findByTitle",
+        "signature": "List<Film> findByTitle(String title)",
+        "description": "Returns a list of films with the specified title."
+      },
+      {
+        "name": "getFilmByFilmId",
+        "signature": "Film getFilmByFilmId(Integer id)",
+        "description": "Returns a film with the specified ID."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Repository pattern",
+      "unusual_implementations": "Native SQL queries are used for custom queries, which may impact performance and maintainability.",
+      "complexity": "The interface has a moderate level of complexity due to the use of custom queries and joins."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\FilmRepository.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code defines a repository interface for managing inventory data in a database, providing methods for retrieving and deleting inventory records.",
+    "key_methods": [
+      {
+        "name": "getInventoriesByInventoryId",
+        "signature": "(Integer inventoryId)",
+        "description": "Retrieves an inventory record by its ID, joining the inventory table with the rental table."
+      },
+      {
+        "name": "deleteInventoryByInventoryId",
+        "signature": "(Integer id)",
+        "description": "Deletes an inventory record by its film ID."
+      },
+      {
+        "name": "getInventoryCount",
+        "signature": "()",
+        "description": "Returns the total count of inventory records in the database."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Repository pattern, using Spring Data JPA for database operations.",
+      "noteworthy_implementation": "Native SQL queries are used for retrieving and deleting data, which may impact database portability.",
+      "complexity": "The complexity of this code is relatively low, as it only provides basic CRUD operations for inventory data."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\InventoryRepository.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This interface defines a repository for interacting with the Rental entity in a database, providing methods for retrieving rentals by ID and customer ID.",
+    "key_methods": [
+      {
+        "name": "getRentalByRentalId",
+        "signature": "Rental getRentalByRentalId(Integer id)",
+        "description": "Retrieves a rental by its ID."
+      },
+      {
+        "name": "getRentalByCustomerId",
+        "signature": "List<Rental> getRentalByCustomerId(Integer customerId)",
+        "description": "Retrieves a list of rentals for a given customer ID using a native SQL query."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Repository pattern",
+      "noteworthy_implementation": "The use of a native SQL query in the getRentalByCustomerId method allows for a more efficient join operation between the rental and customer tables.",
+      "complexity": "The interface extends JpaRepository, which provides basic CRUD operations, keeping the complexity of this interface relatively low."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\RentalRepository.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code defines a repository interface for Staff entities, providing a custom query to retrieve a staff member by their username.",
+    "key_methods": [
+      {
+        "name": "getStaffByUsername",
+        "signature": "(String username)",
+        "description": "Retrieves a staff member by their username using a native SQL query."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Repository pattern",
+      "notations": "Uses Spring Data JPA's @Query annotation for custom queries",
+      "complexity": "Low to moderate, due to the simplicity of the custom query and the use of Spring Data JPA's built-in functionality."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\StaffRepository.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code is the main application class for a Spring Boot project, responsible for launching the application.",
+    "key_methods": [
+      {
+        "name": "main",
+        "signature": "public static void main(String[] args)",
+        "description": "The entry point of the application, where the Spring Boot application is run."
+      },
+      {
+        "name": "SpringApplication",
+        "signature": "public static ConfigurableApplicationContext run(Class<?> primarySource, String... args)",
+        "description": "A Spring Boot method that runs the application, taking the primary source class and command line arguments."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The code uses the Spring Boot framework, which employs the Inversion of Control (IoC) design pattern.",
+      "unusual_implementations": "None",
+      "complexity": "Low, as the code is a standard Spring Boot application class with minimal custom implementation."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\SakilaProjectApplication.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "Handles access denied exceptions by redirecting to an error page",
+    "key_methods": [
+      {
+        "name": "handle",
+        "signature": "(HttpServletRequest, HttpServletResponse, AccessDeniedException) throws IOException, ServletException",
+        "description": "Redirects the user to an error page when an access denied exception occurs"
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Uses the Spring Security framework and implements the AccessDeniedHandler interface",
+      "unusual_implementations": "None",
+      "complexity": "Low"
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\FailureHandler.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "Configures Spring MVC to map URLs to view names",
+    "key_methods": [
+      {
+        "name": "addViewControllers",
+        "signature": "void addViewControllers(ViewControllerRegistry registry)",
+        "description": "Adds view controllers to map URLs to view names"
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "Spring Configuration",
+      "noteworthy_implementation": "Uses Spring's WebMvcConfigurer to configure view controllers",
+      "complexity": "Low to Moderate"
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\MvcConfig.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code handles successful authentication by redirecting users to different pages based on their roles.",
+    "key_methods": {
+      "onAuthenticationSuccess": {
+        "signature": "(HttpServletRequest request, HttpServletResponse response, Authentication authentication)",
+        "description": "Redirects users to different pages based on their roles after successful authentication."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "This code uses the Strategy design pattern for redirecting users.",
+      "unusual_implementations": "The code catches exceptions and prints their stack traces, which might not be the best practice in a production environment.",
+      "complexity": "The code has a time complexity of O(n), where n is the number of authorities, due to the use of the forEach loop."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\SuccessHandler.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code implements a custom UserDetailsService for Spring Security, responsible for loading user details by username.",
+    "key_methods": {
+      "loadUserByUsername": {
+        "signature": "(String anyUsername) throws UsernameNotFoundException",
+        "description": "Loads user details by username, checking both customer and staff repositories, and returns a UserDetails object."
+      }
+    },
+    "complexity_notes": {
+      "design_patterns": "Repository pattern, Dependency Injection (Autowired)",
+      "unusual_implementations": "The password for customers is generated using their customer ID, which may not be secure. The BCryptPasswordEncoder is used to encode the password, but it is instantiated multiple times, which is inefficient.",
+      "complexity": "The method has a time complexity of O(1) since it only performs a constant number of database queries and operations."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\UserDetailsServiceImpl.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "Configures web security for a Spring-based application, defining authentication and authorization rules",
+    "key_methods": [
+      {
+        "name": "configure(HttpSecurity http)",
+        "signature": "protected void configure(HttpSecurity http) throws Exception",
+        "description": "Defines which URL paths should be secured and which should not, including role-based access control and custom login page"
+      },
+      {
+        "name": "userDetailsService()",
+        "signature": "public UserDetailsService userDetailsService()",
+        "description": "Returns a UserDetailsService instance, which is used to load user details for authentication"
+      },
+      {
+        "name": "passwordEncoder()",
+        "signature": "public PasswordEncoder passwordEncoder()",
+        "description": "Returns a PasswordEncoder instance, which is used to encode and decode passwords"
+      },
+      {
+        "name": "authenticationProvider()",
+        "signature": "public DaoAuthenticationProvider authenticationProvider()",
+        "description": "Returns a DaoAuthenticationProvider instance, which is used to authenticate users"
+      },
+      {
+        "name": "configure(AuthenticationManagerBuilder auth)",
+        "signature": "protected void configure(AuthenticationManagerBuilder auth) throws Exception",
+        "description": "Configures the AuthenticationManagerBuilder to use the custom authentication provider"
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Uses the Spring Security framework, which implements the Delegation pattern for authentication and authorization",
+      "unusual_implementations": "Custom login page and success handler are used, which may require additional configuration and implementation",
+      "noteworthy_complexity": "Role-based access control is implemented using Spring Security's built-in features, which can be complex to configure and manage"
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\WebSecurityConfig.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class provides a service layer for managing actors, encapsulating data access and retrieval from a repository.",
+    "key_methods": [
+      {
+        "name": "getAllActors",
+        "signature": "() -> List<Actor>",
+        "description": "Retrieves a list of all actors from the repository."
+      },
+      {
+        "name": "getActorByID",
+        "signature": "(int) -> Actor",
+        "description": "Retrieves an actor by their ID from the repository."
+      },
+      {
+        "name": "getActorsByFullName",
+        "signature": "(String, String) -> List<Actor>",
+        "description": "Retrieves a list of actors by their full name (first and last) from the repository."
+      },
+      {
+        "name": "getActorsByFirstName",
+        "signature": "(String) -> List<Actor>",
+        "description": "Retrieves a list of actors by their first name from the repository."
+      },
+      {
+        "name": "getActorsByLastName",
+        "signature": "(String) -> List<Actor>",
+        "description": "Retrieves a list of actors by their last name from the repository."
+      },
+      {
+        "name": "getActorFullNameFromID",
+        "signature": "(Integer) -> String",
+        "description": "Retrieves the full name of an actor by their ID."
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "Repository Pattern",
+      "dependencies": [
+        "ActorRepository"
+      ],
+      "noteworthy_implementation": "The service layer acts as an abstraction between the business logic and the data access layer, promoting loose coupling and testability."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\ActorService.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code provides a service layer for managing categories, allowing for retrieval of all categories and a specific category by ID.",
+    "key_methods": [
+      {
+        "name": "getAllCategories",
+        "signature": "() -> List<Category>",
+        "description": "Retrieves a list of all categories from the database."
+      },
+      {
+        "name": "getByCategoryId",
+        "signature": "(Integer id) -> Category",
+        "description": "Retrieves a category by its ID from the database."
+      },
+      {
+        "name": "CategoryService",
+        "signature": "(CategoryRepository categoryRepository) -> CategoryService",
+        "description": "Initializes the CategoryService with a CategoryRepository instance."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "This code uses the Service-Repository pattern, where the service layer (CategoryService) interacts with the repository layer (CategoryRepository) to encapsulate data access.",
+      "dependencies": "The CategoryService depends on the CategoryRepository, which is injected through the constructor.",
+      "spring_annotations": "The @Service annotation indicates that this class is a Spring service, and the @Autowired annotation is implied by the constructor injection."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\CategoryService.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code provides a service layer for managing customer data, encapsulating data access and manipulation logic.",
+    "key_methods": [
+      {
+        "name": "getAllCustomers",
+        "signature": "() -> List<Customer>",
+        "description": "Retrieves a list of all customers from the repository."
+      },
+      {
+        "name": "getCustomersByFirstName",
+        "signature": "(String) -> List<Customer>",
+        "description": "Retrieves a list of customers with a matching first name from the repository."
+      },
+      {
+        "name": "getCustomersByLastName",
+        "signature": "(String) -> List<Customer>",
+        "description": "Retrieves a list of customers with a matching last name from the repository."
+      },
+      {
+        "name": "getCustomersByFullName",
+        "signature": "(String, String) -> List<Customer>",
+        "description": "Retrieves a list of customers with a matching full name from the repository."
+      },
+      {
+        "name": "getCustomerByID",
+        "signature": "(int) -> Customer",
+        "description": "Retrieves a customer by their ID from the repository."
+      },
+      {
+        "name": "getCustomerByEmail",
+        "signature": "(String) -> Customer",
+        "description": "Retrieves a customer by their email from the repository."
+      },
+      {
+        "name": "save",
+        "signature": "(Customer) -> void",
+        "description": "Saves a customer to the repository."
+      },
+      {
+        "name": "getCustomerCount",
+        "signature": "() -> Integer",
+        "description": "Retrieves the total count of customers from the repository."
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "Repository Pattern",
+      "complexity": "Low to Moderate",
+      "unusual_implementation": "None",
+      "notes": "The service layer is relatively simple, delegating most operations to the repository. The use of Spring's @Service annotation indicates a dependency injection framework is being used."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\CustomerService.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class provides a service layer for managing film data, encapsulating data access and business logic.",
+    "key_methods": [
+      {
+        "name": "getAllFilms",
+        "signature": "() -> List<Film>",
+        "description": "Retrieves a list of all films from the repository."
+      },
+      {
+        "name": "getFilmByID",
+        "signature": "(int) -> Film",
+        "description": "Retrieves a film by its ID from the repository."
+      },
+      {
+        "name": "getFilmsByTitle",
+        "signature": "(String) -> List<Film>",
+        "description": "Retrieves a list of films with a matching title from the repository."
+      },
+      {
+        "name": "getAvailableFilms",
+        "signature": "() -> List<Film>",
+        "description": "Retrieves a list of available films from the repository."
+      },
+      {
+        "name": "getAvailableFilmCount",
+        "signature": "(Integer) -> Integer",
+        "description": "Retrieves the count of available films for a given ID from the repository."
+      },
+      {
+        "name": "getFilmsByCategory",
+        "signature": "(Integer) -> List<Film>",
+        "description": "Retrieves a list of films belonging to a specific category from the repository."
+      },
+      {
+        "name": "getFilmsByActor",
+        "signature": "(Integer) -> List<Film>",
+        "description": "Retrieves a list of films featuring a specific actor from the repository."
+      },
+      {
+        "name": "save",
+        "signature": "(Film) -> void",
+        "description": "Saves a film to the repository."
+      },
+      {
+        "name": "deleteFilmById",
+        "signature": "(int) -> void",
+        "description": "Deletes a film by its ID from the repository."
+      }
+    ],
+    "complexity_notes": {
+      "design_pattern": "Repository pattern",
+      "dependencies": [
+        "FilmRepository"
+      ],
+      "annotations": [
+        "@Service",
+        "@Transactional"
+      ],
+      "unusual_implementations": "None"
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\FilmService.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code provides a service layer for managing inventory data, encapsulating data access and manipulation logic.",
+    "key_methods": [
+      {
+        "name": "getAllInventory",
+        "signature": "public List<Inventory> getAllInventory()",
+        "description": "Retrieves a list of all inventory items from the database."
+      },
+      {
+        "name": "getInventoriesById",
+        "signature": "public Inventory getInventoriesById(Integer id)",
+        "description": "Retrieves a specific inventory item by its ID from the database."
+      },
+      {
+        "name": "deleteInventoryItemById",
+        "signature": "public void deleteInventoryItemById(Integer id)",
+        "description": "Deletes a specific inventory item by its ID from the database, wrapped in a transaction for data integrity."
+      },
+      {
+        "name": "getInventoryCount",
+        "signature": "public Integer getInventoryCount()",
+        "description": "Retrieves the total count of inventory items in the database."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "This service class follows the Service-Repository pattern, decoupling business logic from data access.",
+      "notations": "The @Transactional annotation is used to ensure data consistency during deletion operations.",
+      "dependencies": "The service class depends on the InventoryRepository interface for data access, promoting loose coupling and testability."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\InventoryService.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java class provides a service layer for managing rentals, allowing for retrieval of rentals by customer and addition of new rentals.",
+    "key_methods": [
+      {
+        "name": "getRentalsByCustomer",
+        "signature": "public List<Rental> getRentalsByCustomer(Integer id)",
+        "description": "Retrieves a list of rentals associated with a specific customer ID."
+      },
+      {
+        "name": "addRental",
+        "signature": "public void addRental(int inventoryId, int customerId, Timestamp returnDate)",
+        "description": "Creates a new rental with the provided inventory ID, customer ID, and return date, and saves it to the repository."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "This class follows the Service-Repository pattern, where the service layer encapsulates business logic and delegates data access to the repository layer.",
+      "unusual_implementations": "The addRental method sets a default staff ID of 1, which may not be suitable for all use cases and could be improved with a more dynamic or configurable approach.",
+      "complexity": "The class has a relatively low complexity, with only two methods and a simple dependency on the RentalRepository. However, the use of Timestamp and LocalDateTime objects may introduce some complexity due to potential date and time zone issues."
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\RentalService.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code provides a service layer for managing staff data, encapsulating data access and retrieval logic.",
+    "key_methods": [
+      {
+        "name": "getAllStaff",
+        "signature": "() -> List<Staff>",
+        "description": "Retrieves a list of all staff members from the repository."
+      },
+      {
+        "name": "getStaffByUsername",
+        "signature": "(String username) -> Staff",
+        "description": "Retrieves a staff member by their username from the repository."
+      },
+      {
+        "name": "StaffService",
+        "signature": "(StaffRepository staffRepository) -> StaffService",
+        "description": "Initializes the StaffService instance with a StaffRepository dependency."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": [
+        "Dependency Injection",
+        "Repository Pattern"
+      ],
+      "notations": [
+        "Spring Framework annotations (@Service)"
+      ],
+      "unusual_implementations": "None"
+    },
+    "file_path": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\StaffService.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML code is used to display a Flaticon web font demo, including instructions on how to use the font, examples of the icons, and attribution information.",
+    "key_methods": [
+      {
+        "name": "onclick",
+        "signature": "onclick=\"this.focus();this.select();\"",
+        "description": "This method is used to select the text in the textarea when it is clicked."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The code uses a simple and straightforward design pattern, with a clear separation of content and presentation.",
+      "unusual_implementations": "The code uses SVG elements to display the icons, which is a common practice for web fonts.",
+      "noteworthy_complexity": "The code includes a large number of SVG paths, which can make it difficult to read and maintain. However, this is a necessary complexity due to the nature of the web font."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays a list of films with their titles and descriptions, using Thymeleaf templating engine.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "th:each=\"film: ${films}\"",
+        "description": "Iterates over a collection of films and renders a table row for each film."
+      },
+      {
+        "name": "th:href",
+        "signature": "th:href=\"@{/films/details(id=${film.filmId})}\"",
+        "description": "Generates a hyperlink to the film details page with the film ID as a parameter."
+      },
+      {
+        "name": "th:text",
+        "signature": "th:text=\"${film.title}\"",
+        "description": "Sets the text content of an element to the value of the specified Thymeleaf expression."
+      }
+    ],
+    "complexity_notes": {
+      "templating_engine": "Thymeleaf",
+      "design_pattern": "Model-View-Controller (MVC)",
+      "unusual_implementation": "The use of Thymeleaf's layout decorator and fragment attributes to manage the page layout."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\actors\\actorDetails.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template is used to display a list of actors and provide a filter form to search for actors by first name and last name.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "(th:each=\"actor: ${allActors}\")",
+        "description": "Iterates over a collection of actors to populate the filter form options."
+      },
+      {
+        "name": "th:text",
+        "signature": "(th:text=\"${actor.firstName}\")",
+        "description": "Sets the text content of an element to the value of the specified expression."
+      },
+      {
+        "name": "th:href",
+        "signature": "(th:href=\"@{actors/details(id=${actor.actorId})}\")",
+        "description": "Sets the href attribute of an element to the value of the specified expression, which is used to generate a link to the actor details page."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The template uses the Model-View-Controller (MVC) pattern, where the template is the view, and the data is provided by a controller.",
+      "unusual_implementations": "The template uses Thymeleaf syntax, which is a templating engine for Java-based web applications. The use of Thymeleaf's `th:each` and `th:text` attributes allows for dynamic data binding and iteration over collections.",
+      "complexity": "The template has a moderate level of complexity due to the use of Thymeleaf syntax and the dynamic data binding. However, the overall structure of the template is straightforward and easy to follow."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays a list of categories with links to their details pages.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "th:each=\"category: ${allCategories}\"",
+        "description": "Iterates over the list of categories and generates a table row for each one."
+      },
+      {
+        "name": "th:href",
+        "signature": "th:href=\"@{categories/details(id=${category.categoryId})}\"",
+        "description": "Generates a link to the details page for each category."
+      }
+    ],
+    "complexity_notes": {
+      "template_engine": "Thymeleaf",
+      "design_pattern": "Template-based rendering",
+      "unusual_implementation": "Use of Thymeleaf's layout decorator and fragment attributes to manage page layout."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\categories\\categories.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays a list of films with their titles and descriptions, using Thymeleaf templating engine.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "th:each=\"film: ${films}\"",
+        "description": "Iterates over a collection of films and renders a table row for each film."
+      },
+      {
+        "name": "th:href",
+        "signature": "th:href=\"@{/films/details(id=${film.filmId})}\"",
+        "description": "Generates a hyperlink to the film details page with the film ID as a parameter."
+      },
+      {
+        "name": "th:text",
+        "signature": "th:text=\"${film.title}\"",
+        "description": "Sets the text content of an element to the value of the film title."
+      },
+      {
+        "name": "th:action",
+        "signature": "th:action=\"${films}\"",
+        "description": "Sets the action attribute of an element to the value of the films collection."
+      }
+    ],
+    "complexity_notes": {
+      "templating_engine": "Thymeleaf",
+      "design_pattern": "Model-View-Controller (MVC)",
+      "unusual_implementation": "The use of Thymeleaf's layout decorator and fragment attributes to manage the page layout."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\categories\\categoryDetails.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays customer information and their rented films using Thymeleaf templating engine.",
+    "key_methods": [
+      {
+        "name": "th:text",
+        "signature": "(expression)",
+        "description": "Sets the text content of an element based on the given Thymeleaf expression."
+      },
+      {
+        "name": "th:each",
+        "signature": "(variable : iterable)",
+        "description": "Iterates over a collection and renders the element for each item."
+      },
+      {
+        "name": "th:href",
+        "signature": "(url)",
+        "description": "Sets the href attribute of an element based on the given Thymeleaf URL expression."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Template engine (Thymeleaf) is used for dynamic content rendering.",
+      "unusual_implementations": "The use of Thymeleaf's conditional expressions (e.g., ${customer != null} ? ${'Hello, ' + (customer.firstName.concat(' ' + customer.lastName).toUpperCase())} : 'Hello, Customer') to handle null values and concatenate strings.",
+      "complexity": "The template uses a mix of HTML, Thymeleaf syntax, and Spring Security tags, which may require knowledge of multiple technologies to fully understand and maintain."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template uses Thymeleaf to render a layout with a title, navigation, and content sections, displaying an error message with an image.",
+    "key_methods": [
+      {
+        "name": "th:replace",
+        "signature": "th:replace=\"fragments/navigation :: navigation\"",
+        "description": "Replaces the current element with the content of the specified fragment"
+      },
+      {
+        "name": "th:src",
+        "signature": "th:src=\"@{/images/explosion.jpeg}\"",
+        "description": "Sets the source of the image element to the specified URL"
+      },
+      {
+        "name": "layout:decorator",
+        "signature": "layout:decorator=\"layout/layout\"",
+        "description": "Specifies the layout decorator to use for this template"
+      },
+      {
+        "name": "layout:fragment",
+        "signature": "layout:fragment=\"content\"",
+        "description": "Defines a fragment of the layout that can be replaced or inserted"
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Template inheritance and fragment replacement using Thymeleaf",
+      "unusual_implementations": "Use of XML namespaces for Thymeleaf attributes",
+      "complexity": "Low to moderate, due to the use of a templating engine and layout decorators"
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\error.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays film details and allows authenticated users to rent the film if it is available.",
+    "key_methods": [
+      {
+        "name": "th:action",
+        "signature": "${details}",
+        "description": "Sets the action attribute of the HTML element to the value of the 'details' variable."
+      },
+      {
+        "name": "th:text",
+        "signature": "${details.title}",
+        "description": "Sets the text content of the HTML element to the value of the 'title' property of the 'details' variable."
+      },
+      {
+        "name": "sec:authorize",
+        "signature": "isAuthenticated()",
+        "description": "Conditionally includes the content of the HTML element if the user is authenticated."
+      },
+      {
+        "name": "th:if",
+        "signature": "${available == true}",
+        "description": "Conditionally includes the content of the HTML element if the 'available' variable is true."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Template engine (Thymeleaf) is used for dynamic content rendering.",
+      "unusual_implementations": "The use of Thymeleaf's layout decorator and fragment attributes to manage the HTML structure.",
+      "complexity": "The template uses a combination of Thymeleaf expressions, Spring Security tags, and HTML elements, which may increase the complexity of the code."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template is used to display a list of films, allowing users to browse and filter films by title.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "th:each=\"film: ${allFilms}\"",
+        "description": "Iterates over a collection of films to populate the select menu and table rows."
+      },
+      {
+        "name": "th:text",
+        "signature": "th:text=\"${film.title}\"",
+        "description": "Sets the text content of an element to the value of a film's title or description."
+      },
+      {
+        "name": "th:href",
+        "signature": "th:href=\"@{films/details(id=${film.filmId})}\"",
+        "description": "Sets the href attribute of a link to a URL that includes the film's ID."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The template uses a layout decorator, which is a design pattern that allows for reusable page layouts.",
+      "unusual_implementations": "The template uses Thymeleaf syntax, which is a templating engine that allows for dynamic content generation.",
+      "complexity": "The template has a moderate level of complexity due to the use of Thymeleaf syntax and the layout decorator."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\films\\films.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML code snippet is for a website footer section, containing information about the website, quick access links, services, and contact details.",
+    "key_methods": [],
+    "complexity_notes": {
+      "design_patterns": "The code uses a simple and standard HTML structure, with no complex design patterns or unusual implementations.",
+      "noteworthy_complexity": "The code includes a script tag to dynamically display the current year for copyright purposes.",
+      "unusual_implementations": "The code uses Thymeleaf syntax (th:fragment) for templating, but no complex logic or methods are implemented."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML code defines the basic structure and styling for a web page, specifically the header section, using Thymeleaf templating engine and Bootstrap CSS framework.",
+    "key_methods": [],
+    "complexity_notes": {
+      "design_patterns": "Thymeleaf templating engine is used for dynamic content rendering",
+      "unusual_implementations": "The use of Thymeleaf's th:fragment attribute to define a reusable header fragment",
+      "noteworthy_complexity": "The inclusion of multiple CSS and JavaScript libraries, such as Bootstrap, Font Awesome, and jQuery, which can impact page load times and complexity"
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\fragments\\header.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML code snippet defines a navigation bar for a web application, including links to different pages and user authentication features.",
+    "key_methods": [],
+    "complexity_notes": {
+      "design_patterns": "Thymeleaf templating engine is used for dynamic content rendering.",
+      "unusual_implementations": "Spring Security is integrated for user authentication and authorization.",
+      "noteworthy_complexity": "The code uses Thymeleaf's sec namespace for security-related attributes, such as sec:authorize and sec:authentication."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\fragments\\navigation.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML code snippet is for a web page that serves as a landing page for the Dependables Film Store, displaying a jumbotron with a welcome message, an image, and a quote from Walt Disney, along with a call-to-action button to explore films.",
+    "key_methods": [],
+    "complexity_notes": {
+      "design_patterns": "Thymeleaf templating engine is used for dynamic content rendering",
+      "unusual_implementations": "The code uses Thymeleaf's layout decorator and fragment attributes to manage the page structure",
+      "noteworthy_complexity": "The code has a simple structure, with most complexity handled by the Thymeleaf engine"
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\home.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML code snippet is for a web page that displays a slideshow of movie posters with their respective descriptions, directors, writers, and stars.",
+    "key_methods": [],
+    "complexity_notes": {
+      "design_patterns": "None",
+      "unusual_implementations": "The code uses Thymeleaf layout and decorator attributes, but they are not utilized in this specific snippet.",
+      "noteworthy_complexity": "The code is relatively simple and straightforward, with a focus on HTML structure and content. However, the use of Thymeleaf attributes suggests that this code may be part of a larger, more complex application."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This is an HTML template using Thymeleaf, a Java-based template engine, to define a basic layout for a web page.",
+    "key_methods": [],
+    "complexity_notes": {
+      "design_patterns": "Template Inheritance",
+      "unusual_implementations": "Thymeleaf's layout dialect is used for template inheritance and fragment replacement.",
+      "noteworthy_complexity": "The use of Thymeleaf's layout and replace attributes allows for modular and reusable HTML templates."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\layout\\layout.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template is used for a login page, allowing users to enter their credentials and submit a form to authenticate.",
+    "key_methods": [
+      {
+        "name": "th:if",
+        "signature": "${param.error} or ${param.logout}",
+        "description": "Conditional statement to display error or logout messages"
+      },
+      {
+        "name": "th:action",
+        "signature": "@{/login}",
+        "description": "Sets the form action URL to the login endpoint"
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Template engine (Thymeleaf) is used for dynamic content rendering",
+      "unusual_implementations": "The form submission is handled by a separate endpoint (/login), which is not defined in this template",
+      "complexity": "Low to moderate, as the template is relatively simple and only contains basic HTML and Thymeleaf syntax"
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\login.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays a customer's rental history, including film titles, rental dates, and return dates.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "th:each=\"order: ${history}\"",
+        "description": "Iterates over a collection of orders and renders the table rows for each order."
+      },
+      {
+        "name": "th:text",
+        "signature": "th:text=\"${expression}\"",
+        "description": "Sets the text content of an element based on a Thymeleaf expression."
+      },
+      {
+        "name": "th:href",
+        "signature": "th:href=\"@{/path}\"",
+        "description": "Sets the href attribute of an element based on a Thymeleaf link expression."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Template engine (Thymeleaf) is used to separate presentation logic from application logic.",
+      "unusual_implementations": "The use of Thymeleaf's layout decorator and fragment attributes to manage the page layout.",
+      "complexity": "The template uses a combination of Thymeleaf expressions, conditionals, and iterations to render the rental history table."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\owner\\customerDetails.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays a customer overview page with filtering and searching capabilities.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "(collection, variable)",
+        "description": "Iterates over a collection and assigns each item to a variable."
+      },
+      {
+        "name": "th:text",
+        "signature": "(expression)",
+        "description": "Sets the text content of an element to the result of the given expression."
+      },
+      {
+        "name": "th:href",
+        "signature": "(expression)",
+        "description": "Sets the href attribute of an element to the result of the given expression."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": [
+        "Template Engine (Thymeleaf)",
+        "Model-View-Controller (MVC)"
+      ],
+      "unusual_implementations": [
+        "Use of Thymeleaf's layout decorator to inherit a common layout",
+        "Use of Thymeleaf's expression language to bind data to HTML elements"
+      ],
+      "complexity": "Moderate",
+      "reasons": [
+        "Use of a template engine",
+        "Multiple loops and conditional statements",
+        "Data binding and expression language"
+      ]
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML code snippet is used to create a form for editing film information, including film ID, title, description, release year, rental duration, price, rating, length, and replacement cost.",
+    "key_methods": [
+      {
+        "method": "th:action",
+        "signature": "@{/save}",
+        "description": "Specifies the action URL for the form submission."
+      },
+      {
+        "method": "th:object",
+        "signature": "${film}",
+        "description": "Binds the form data to a film object."
+      },
+      {
+        "method": "th:field",
+        "signature": "*{field_name}",
+        "description": "Binds a form field to a property of the film object."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The code uses the Model-View-Controller (MVC) pattern, with Thymeleaf templating engine.",
+      "unusual_implementations": "The code uses Thymeleaf's layout decorator to inherit a common layout.",
+      "complexity": "The code has a moderate level of complexity due to the use of Thymeleaf templating and the number of form fields."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\owner\\edit-film.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template displays a table of film information, including film ID, title, description, and other details, using Thymeleaf templating engine.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "th:each=\"film : ${films}\"",
+        "description": "Iterates over a collection of films and renders a table row for each film."
+      },
+      {
+        "name": "th:text",
+        "signature": "th:text=\"${film.filmId}\"",
+        "description": "Sets the text content of an HTML element to the value of a Thymeleaf expression."
+      },
+      {
+        "name": "th:href",
+        "signature": "th:href=\"@{/films/details(id=${film.filmId})}\"",
+        "description": "Sets the href attribute of an HTML element to a Thymeleaf link expression."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The template uses a Model-View-Controller (MVC) pattern, where the template is the view, and the data is provided by a controller.",
+      "unusual_implementations": "The template uses Thymeleaf's layout decorator to inherit a common layout from another template.",
+      "complexity": "The template has a moderate level of complexity due to the use of Thymeleaf expressions and iterations."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\owner\\films.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template is used to manage films, allowing users to filter films by title and view a table of film details.",
+    "key_methods": [
+      {
+        "name": "th:each",
+        "signature": "th:each=\"film: ${allFilms}\"",
+        "description": "Iterates over a collection of films to populate a dropdown menu."
+      },
+      {
+        "name": "th:text",
+        "signature": "th:text=\"${film.title}\"",
+        "description": "Sets the text content of an element to the value of a film's title."
+      },
+      {
+        "name": "th:href",
+        "signature": "th:href=\"@{/films/details(id=${film.filmId})}\"",
+        "description": "Sets the href attribute of an element to a URL that links to a film's details page."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The template uses a layout decorator, which is a design pattern that allows for the reuse of common HTML elements across multiple pages.",
+      "unusual_implementations": "The template uses Thymeleaf, a templating engine that allows for the use of natural templating, which can make the code more readable and easier to maintain.",
+      "complexity": "The template has a moderate level of complexity due to the use of Thymeleaf syntax and the layout decorator."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This HTML template is used to display a staff dashboard, showing staff information, admin actions, and links to view customers, films, and inventory.",
+    "key_methods": [
+      {
+        "name": "th:text",
+        "signature": "(expression)",
+        "description": "Sets the text content of an element based on a Thymeleaf expression."
+      },
+      {
+        "name": "th:action",
+        "signature": "(url)",
+        "description": "Sets the action URL of a form."
+      },
+      {
+        "name": "th:href",
+        "signature": "(url)",
+        "description": "Sets the href attribute of an anchor element."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "Template engine (Thymeleaf) is used to separate presentation logic from application logic.",
+      "unusual_implementations": "The use of Thymeleaf expressions to conditionally display staff information and links.",
+      "complexity": "The template has a moderate level of complexity due to the use of Thymeleaf expressions and conditional statements."
+    },
+    "file_path": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This Java code is used for unit testing various controllers and services in a film rental application using Mockito framework.",
+    "key_methods": [
+      {
+        "method_name": "testActorById",
+        "signature": "(void)",
+        "description": "Tests the findActorById method in ActorController by mocking the actorRepository and verifying the returned actor's id."
+      },
+      {
+        "method_name": "testFilmByID",
+        "signature": "(void)",
+        "description": "Tests the findFilmByID method in FilmController by mocking the filmRepository and verifying the returned film's id."
+      },
+      {
+        "method_name": "testCategoryById",
+        "signature": "(void)",
+        "description": "Tests the getCategoryById method in CategoryController by mocking the categoryRepository and verifying the returned category's id."
+      },
+      {
+        "method_name": "testCustomerById",
+        "signature": "(void)",
+        "description": "Tests the getCustomerByCustomerId method in CustomerController by mocking the customerRepository and verifying the returned customer's id."
+      },
+      {
+        "method_name": "init",
+        "signature": "(void)",
+        "description": "Initializes the Mockito annotations for the test class."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "The code uses the Mockito framework for unit testing, which is an example of the Test-Driven Development (TDD) design pattern.",
+      "complexity": "The code has a moderate level of complexity due to the use of Mockito and the various controllers and services being tested.",
+      "unusual_implementations": "The code uses the @Spy and @InjectMocks annotations from Mockito to create mock objects and inject them into the controllers and services being tested."
+    },
+    "file_path": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "batch_id": 0
+  },
+  {
+    "purpose": "This code snippet contains JUnit tests for the MainController class in a Sakila project application.",
+    "key_methods": [
+      {
+        "name": "MainController1",
+        "signature": "()",
+        "description": "Tests the home method of the MainController class, asserting that it returns 'home'."
+      },
+      {
+        "name": "MainController2",
+        "signature": "()",
+        "description": "Tests the account method of the MainController class, asserting that it returns 'account'."
+      },
+      {
+        "name": "MainController3",
+        "signature": "()",
+        "description": "Tests the login method of the MainController class, asserting that it returns 'login'."
+      }
+    ],
+    "complexity_notes": {
+      "design_patterns": "None apparent",
+      "unusual_implementations": "The tests are very straightforward and do not cover any edge cases or complex scenarios.",
+      "complexity": "Low"
+    },
+    "file_path": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\SakilaProjectApplicationTests.java",
+    "batch_id": 0
+  }
+]

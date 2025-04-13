@@ -1,0 +1,1072 @@
+[
+  {
+    "id": 0,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\ActorController.java",
+    "content": "package com.sparta.engineering72.sakilaproject.controller;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Actor;\r\nimport com.sparta.engineering72.sakilaproject.services.ActorService;\r\nimport com.sparta.engineering72.sakilaproject.services.FilmService;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.ui.ModelMap;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\nimport org.springframework.web.bind.annotation.RequestParam;\r\n\r\nimport java.util.List;"
+  },
+  {
+    "id": 1,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\ActorController.java",
+    "content": "@Controller\r\npublic class ActorController"
+  },
+  {
+    "id": 2,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\ActorController.java",
+    "content": "{\r\n\r\n    private FilmService filmService;\r\n    private ActorService actorService;\r\n\r\n    @Autowired\r\n    public ActorController(FilmService filmService, ActorService actorService) {\r\n        this.filmService = filmService;\r\n        this.actorService = actorService;\r\n    }\r\n\r\n    @GetMapping(\"/actors\")\r\n    public String getActors(ModelMap modelMap,\r\n                            @RequestParam(value = \"firstName\", defaultValue = \"ALL ACTORS\") String firstNameFilter,\r\n                            @RequestParam(value = \"lastName\", defaultValue = \"ALL ACTORS\") String lastNameFilter) {\r\n        List<Actor> actors;\r\n        if (firstNameFilter.equals(\"ALL ACTORS\") && lastNameFilter.equals(\"ALL ACTORS\")) {\r\n            actors = actorService.getAllActors();\r\n        } else if (lastNameFilter.equals(\"ALL ACTORS\")){\r\n            actors = actorService.getActorsByFirstName(firstNameFilter);\r\n        } else if (firstNameFilter.equals(\"ALL ACTORS\")) {\r\n            actors = actorService.getActorsByLastName(lastNameFilter);\r\n        } else {\r\n            actors = actorService.getActorsByFullName(firstNameFilter, lastNameFilter);\r\n        }\r\n        modelMap.addAttribute(\"actors\", actors);\r\n        modelMap.addAttribute(\"allActors\", actorService.getAllActors());\r\n        return \"actors/actors\";\r\n    }"
+  },
+  {
+    "id": 3,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\ActorController.java",
+    "content": "@GetMapping(\"/actors/details\")\r\n    public String getActorFilmDetails(ModelMap modelMap,\r\n                                      @RequestParam(value = \"id\") Integer id) {\r\n        modelMap.addAttribute(\"name\", actorService.getActorFullNameFromID(id));\r\n        modelMap.addAttribute(\"films\", filmService.getFilmsByActor(id));\r\n        return \"actors/actorDetails\";\r\n    }\r\n\r\n    public Actor findActorById(Integer id) {\r\n        return actorService.getActorByID(id);\r\n    }\r\n\r\n    public String getActorFullNameFromID(Integer id){\r\n        Actor actor = actorService.getActorByID(id);\r\n        return actor.getFirstName() + \" \" + actor.getLastName();\r\n    }\r\n}"
+  },
+  {
+    "id": 4,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CategoryController.java",
+    "content": "package com.sparta.engineering72.sakilaproject.controller;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Category;\r\nimport com.sparta.engineering72.sakilaproject.services.*;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.ui.ModelMap;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\nimport org.springframework.web.bind.annotation.RequestParam;"
+  },
+  {
+    "id": 5,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CategoryController.java",
+    "content": "@Controller\r\npublic class CategoryController {\r\n\r\n    private FilmService filmService;\r\n    private CategoryService categoryService;\r\n\r\n    @Autowired\r\n    public CategoryController(FilmService filmService, CategoryService categoryService) {\r\n        this.filmService = filmService;\r\n        this.categoryService = categoryService;\r\n    }\r\n\r\n    @GetMapping(\"/categories\")\r\n    public String getCategories(ModelMap modelMap) {\r\n        modelMap.addAttribute(\"allCategories\", categoryService.getAllCategories());\r\n        return \"/categories/categories\";\r\n    }\r\n\r\n    @GetMapping(\"/categories/details\")\r\n    public String getCategoryDetails(ModelMap modelMap,\r\n                                 @RequestParam(value = \"id\") Integer id) {\r\n        modelMap.addAttribute(\"category\", categoryService.getByCategoryId(id));\r\n        modelMap.addAttribute(\"films\", filmService.getFilmsByCategory(id));\r\n        return \"categories/categoryDetails\";    }\r\n\r\n        public Category getCategoryById(Integer id) {\r\n            return categoryService.getByCategoryId(id);\r\n        }\r\n\r\n}"
+  },
+  {
+    "id": 6,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CustomerController.java",
+    "content": "package com.sparta.engineering72.sakilaproject.controller;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.*;\r\nimport com.sparta.engineering72.sakilaproject.entities.Customer;\r\nimport com.sparta.engineering72.sakilaproject.entities.Film;\r\nimport com.sparta.engineering72.sakilaproject.services.CustomerService;\r\nimport com.sparta.engineering72.sakilaproject.services.FilmService;\r\nimport com.sparta.engineering72.sakilaproject.services.InventoryService;\r\nimport com.sparta.engineering72.sakilaproject.services.RentalService;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.ui.Model;\r\nimport org.springframework.ui.ModelMap;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport javax.servlet.http.HttpServletRequest;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nimport javax.servlet.http.HttpServletRequest;\r\nimport java.sql.Timestamp;\r\nimport java.time.Instant;\r\nimport java.time.LocalDate;"
+  },
+  {
+    "id": 7,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CustomerController.java",
+    "content": "@Controller\r\npublic class CustomerController"
+  },
+  {
+    "id": 8,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CustomerController.java",
+    "content": "{\r\n\r\n    private CustomerService customerService;\r\n    private RentalService rentalService;\r\n    private InventoryService inventoryService;\r\n    private FilmService filmService;\r\n\r\n    @Autowired\r\n    public CustomerController(CustomerService customerService, RentalService rentalService, InventoryService inventoryService, FilmService filmService) {\r\n        this.customerService = customerService;\r\n        this.rentalService = rentalService;\r\n        this.inventoryService = inventoryService;\r\n        this.filmService = filmService;\r\n    }"
+  },
+  {
+    "id": 9,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CustomerController.java",
+    "content": "@GetMapping(\"/customer\")\r\n    public String currentUser(ModelMap modelMap, HttpServletRequest request) {\r\n        String email = request.getRemoteUser();\r\n        Customer customer = customerService.getCustomerByEmail(email);\r\n        List<Order> ordersList = new ArrayList<>();\r\n        if(customer != null){\r\n            List<Rental> customersRentals = rentalService.getRentalsByCustomer(customer.getCustomerId());\r\n            for(Rental rental : customersRentals){\r\n                int inventoryId = rental.getInventoryId();\r\n                Inventory inventory = inventoryService.getInventoriesById(inventoryId);\r\n                Film film = filmService.getFilmByID(inventory.getFilmId());\r\n                Order order = new Order(customer, film, rental);\r\n                ordersList.add(order);\r\n            }\r\n        }\r\n        modelMap.addAttribute(\"orders\", ordersList);\r\n        modelMap.addAttribute(\"customer\", customer);\r\n        return \"customer/customer\";\r\n    }"
+  },
+  {
+    "id": 10,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CustomerController.java",
+    "content": "@GetMapping(\"/owner/customers\")\r\n    public String getCustomers(ModelMap modelMap,\r\n                               @RequestParam(value = \"firstName\", defaultValue = \"ALL CUSTOMERS\") String firstNameFilter,\r\n                               @RequestParam(value = \"lastName\", defaultValue = \"ALL CUSTOMERS\") String lastNameFilter) {\r\n        List<Customer> customers;\r\n        if (firstNameFilter.equals(\"ALL CUSTOMERS\") && lastNameFilter.equals(\"ALL CUSTOMERS\")) {\r\n            customers = customerService.getAllCustomers();\r\n        } else if (lastNameFilter.equals(\"ALL CUSTOMERS\")){\r\n            customers = customerService.getCustomersByFirstName(firstNameFilter);\r\n        } else if (firstNameFilter.equals(\"ALL CUSTOMERS\")) {\r\n            customers = customerService.getCustomersByLastName(lastNameFilter);\r\n        } else {\r\n            customers = customerService.getCustomersByFullName(firstNameFilter, lastNameFilter);\r\n        }\r\n\r\n        modelMap.addAttribute(\"customers\", customers);\r\n        modelMap.addAttribute(\"allCustomers\", customerService.getAllCustomers());\r\n        return \"owner/customers\";\r\n    }"
+  },
+  {
+    "id": 11,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\CustomerController.java",
+    "content": "@GetMapping(\"/owner/view/customers/{id}\")\r\n    public String showUsersRentalHistory(ModelMap modelMap,\r\n                                         @PathVariable(name = \"id\") int id) {\r\n        Customer customer = customerService.getCustomerByID(id);\r\n        List<Order> ordersList = new ArrayList<>();\r\n        if (customer != null) {\r\n            List<Rental> customersRentals = rentalService.getRentalsByCustomer(id);\r\n            for (Rental rental : customersRentals) {\r\n                int inventoryId = rental.getInventoryId();\r\n                Inventory inventory = inventoryService.getInventoriesById(inventoryId);\r\n                Film film = filmService.getFilmByID(inventory.getFilmId());\r\n                Order order = new Order(customer, film, rental);\r\n                ordersList.add(order);\r\n            }\r\n        }\r\n        modelMap.addAttribute(\"history\", ordersList);\r\n        modelMap.addAttribute(\"customer\", customer);\r\n        return \"owner/customerDetails\";\r\n    }\r\n\r\n\r\n}"
+  },
+  {
+    "id": 12,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\FilmController.java",
+    "content": "package com.sparta.engineering72.sakilaproject.controller;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Customer;\r\nimport com.sparta.engineering72.sakilaproject.entities.Film;\r\nimport com.sparta.engineering72.sakilaproject.entities.Inventory;\r\nimport com.sparta.engineering72.sakilaproject.entities.Rental;\r\nimport com.sparta.engineering72.sakilaproject.services.CustomerService;\r\nimport com.sparta.engineering72.sakilaproject.services.FilmService;\r\nimport com.sparta.engineering72.sakilaproject.services.InventoryService;\r\nimport com.sparta.engineering72.sakilaproject.services.RentalService;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.transaction.annotation.Transactional;\r\nimport org.springframework.ui.ModelMap;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport javax.persistence.criteria.CriteriaBuilder;\r\nimport java.security.Principal;\r\nimport java.sql.Timestamp;\r\nimport java.time.LocalDateTime;\r\nimport java.util.ArrayList;\r\nimport java.util.HashMap;\r\nimport org.springframework.ui.Model;\r\nimport org.springframework.ui.ModelMap;\r\nimport org.springframework.web.bind.annotation.*;\r\nimport org.springframework.web.servlet.ModelAndView;\r\n\r\nimport java.sql.Timestamp;\r\nimport java.time.Instant;\r\nimport java.time.LocalDate;\r\nimport java.util.List;"
+  },
+  {
+    "id": 13,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\FilmController.java",
+    "content": "@Controller\r\npublic class FilmController"
+  },
+  {
+    "id": 14,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\FilmController.java",
+    "content": "{\r\n\r\n    private FilmService filmService;\r\n    private InventoryService inventoryService;\r\n    private RentalService rentalService;\r\n    private CustomerService customerService;\r\n\r\n    @Autowired\r\n    public FilmController(FilmService filmService, InventoryService inventoryService, RentalService rentalService, CustomerService customerService) {\r\n        this.filmService = filmService;\r\n        this.inventoryService = inventoryService;\r\n        this.rentalService = rentalService;\r\n        this.customerService = customerService;\r\n    }\r\n\r\n    @GetMapping(\"/films\")\r\n    public String getFilms(ModelMap modelMap, @RequestParam(value = \"title\", defaultValue = \"ALL FILMS\") String filter) {\r\n        List<Film> films;\r\n        if (filter.equals(\"ALL FILMS\")){\r\n            films = filmService.getAllFilms();\r\n        }\r\n        else {\r\n            films = filmService.getFilmsByTitle(filter);\r\n        }\r\n//        modelMap.addAttribute(\"title\", filmService.getFilmsByTitle(title));\r\n        modelMap.addAttribute(\"films\", films);\r\n        modelMap.addAttribute(\"availableFilms\", filmService.getAvailableFilms());\r\n        modelMap.addAttribute(\"allFilms\", filmService.getAllFilms());\r\n        return \"/films/films\";\r\n    }"
+  },
+  {
+    "id": 15,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\FilmController.java",
+    "content": "@GetMapping(\"/films/details\")\r\n    public String getFilmDetails(ModelMap modelMap, @RequestParam(value = \"id\") Integer id) {\r\n        Film film = filmService.getFilmByID(id);\r\n        boolean available = filmService.getAvailableFilms().contains(film);\r\n        modelMap.addAttribute(\"available\", available);\r\n        modelMap.addAttribute(\"details\", film);\r\n        return \"films/filmDetails\";\r\n    }\r\n\r\n    @GetMapping(\"/rent/{filmid}\")\r\n    public String rentFilm(ModelMap modelMap, Principal principal,\r\n                           @PathVariable(\"filmid\") int filmid){\r\n        String name = principal.getName();\r\n        Customer customer = customerService.getCustomerByEmail(name);\r\n        List<Inventory> inventoryList = inventoryService.getAllInventory();\r\n        for (Inventory inventory : inventoryList){\r\n            if (inventory.getFilmId() == filmid){\r\n                LocalDateTime returnDate = LocalDateTime.now().plusDays(filmService.getFilmByID(inventory.getFilmId()).getRentalDuration());\r\n//                inventoryService.deleteInventoryItemById(inventory.getFilmId());\r\n                rentalService.addRental(inventory.getInventoryId(), customer.getCustomerId(), Timestamp.valueOf(returnDate));\r\n                break;\r\n            }\r\n        }\r\n        modelMap.addAttribute(\"rent\",\"Rented\");\r\n        return \"redirect:/films\";\r\n    }"
+  },
+  {
+    "id": 16,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\FilmController.java",
+    "content": "@GetMapping(\"/owner/manage-films\")\r\n    public String getFilmDetails(ModelMap modelMap,\r\n                                 @RequestParam(value = \"title\", defaultValue = \"ALL FILMS\") String filter) {\r\n\r\n\r\n        List<Film> films;\r\n        if (filter.equals(\"ALL FILMS\")){\r\n            films = filmService.getAllFilms();\r\n        }\r\n        else {\r\n            films = filmService.getFilmsByTitle(filter);\r\n        }\r\n\r\n        List<Film> allFilms = filmService.getAllFilms();\r\n        HashMap<Integer, Integer> filmCount = new HashMap<>();\r\n        for(Film film : allFilms){\r\n            filmCount.put(film.getFilmId(), filmService.getAvailableFilmCount(film.getFilmId()));\r\n        }\r\n\r\n        modelMap.addAttribute(\"films\", films);\r\n        modelMap.addAttribute(\"filmCount\", filmCount);\r\n        modelMap.addAttribute(\"allFilms\", films);\r\n        return \"/owner/manage-films\";\r\n    }\r\n\r\n    @RequestMapping(\"/edit/{id}\")\r\n    public ModelAndView showEditProductPage(@PathVariable(name = \"id\") int id) {\r\n        ModelAndView mav = new ModelAndView(\"/owner/edit-film\");\r\n        Film film = filmService.getFilmByID(id);\r\n        mav.addObject(\"film\", film);\r\n\r\n        return mav;\r\n    }\r\n\r\n    @RequestMapping(\"/delete/{id}\")\r\n    public String deleteProduct(@PathVariable(name = \"id\") int id) {\r\n        filmService.deleteFilmById(id);\r\n        return \"redirect:/owner/manage-films\";\r\n    }\r\n\r\n\r\n    public Film findFilmByID(Integer id) {\r\n        return filmService.getFilmByID(id);\r\n    }"
+  },
+  {
+    "id": 17,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\FilmController.java",
+    "content": "}"
+  },
+  {
+    "id": 18,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\MainController.java",
+    "content": "package com.sparta.engineering72.sakilaproject.controller;\r\n\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\nimport org.springframework.stereotype.Controller;\r\n\r\n@Controller\r\npublic class MainController {\r\n\r\n    @RequestMapping(value=\"/\")\r\n    public String home() {\r\n        return \"home\";\r\n    }\r\n\r\n    @RequestMapping(value=\"/login\")\r\n    public String login() {\r\n        return \"login\";\r\n    }\r\n\r\n    @RequestMapping(value=\"/account\")\r\n    public String account(){\r\n        return \"account\";\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 19,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\StaffController.java",
+    "content": "package com.sparta.engineering72.sakilaproject.controller;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Staff;\r\nimport com.sparta.engineering72.sakilaproject.services.CustomerService;\r\nimport com.sparta.engineering72.sakilaproject.services.InventoryService;\r\nimport com.sparta.engineering72.sakilaproject.services.StaffService;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.ui.ModelMap;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\n\r\nimport javax.servlet.http.HttpServletRequest;"
+  },
+  {
+    "id": 20,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\controller\\StaffController.java",
+    "content": "@Controller\r\npublic class StaffController {\r\n\r\n    private StaffService staffService;\r\n    private CustomerService customerService;\r\n    private InventoryService inventoryService;\r\n    @Autowired\r\n    public StaffController(StaffService staffService, CustomerService customerService, InventoryService inventoryService) {\r\n        this.staffService = staffService;\r\n        this.customerService = customerService;\r\n        this.inventoryService = inventoryService;\r\n    }\r\n    @GetMapping(\"/owner\")\r\n    public String currentUser(ModelMap modelMap, HttpServletRequest request) {\r\n        String username = request.getRemoteUser();\r\n        Staff staff = staffService.getStaffByUsername(username);\r\n        Integer customerCount = customerService.getCustomerCount();\r\n        Integer inventoryCount = inventoryService.getInventoryCount();\r\n        modelMap.addAttribute(\"staff\", staff);\r\n        modelMap.addAttribute(\"customers\", customerCount);\r\n        modelMap.addAttribute(\"inventory\", inventoryCount);\r\n        return \"/owner/owner\";\r\n    }\r\n}"
+  },
+  {
+    "id": 21,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Actor.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.*;\r\nimport java.sql.Timestamp;\r\nimport java.util.Collection;\r\nimport java.util.Objects;"
+  },
+  {
+    "id": 22,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Actor.java",
+    "content": "@Entity\r\npublic class Actor"
+  },
+  {
+    "id": 23,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Actor.java",
+    "content": "{\r\n    private int actorId;\r\n    private String firstName;\r\n    private String lastName;\r\n    private Timestamp lastUpdate;\r\n\r\n    @Id\r\n    @Column(name = \"actor_id\")\r\n    public int getActorId() {\r\n        return actorId;\r\n    }\r\n\r\n    public void setActorId(int actorId) {\r\n        this.actorId = actorId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"first_name\")\r\n    public String getFirstName() {\r\n        return firstName;\r\n    }\r\n\r\n    public void setFirstName(String firstName) {\r\n        this.firstName = firstName;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_name\")\r\n    public String getLastName() {\r\n        return lastName;\r\n    }\r\n\r\n    public void setLastName(String lastName) {\r\n        this.lastName = lastName;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Actor actor = (Actor) o;\r\n        return actorId == actor.actorId &&\r\n                Objects.equals(firstName, actor.firstName) &&\r\n                Objects.equals(lastName, actor.lastName) &&\r\n                Objects.equals(lastUpdate, actor.lastUpdate);\r\n    }"
+  },
+  {
+    "id": 24,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Actor.java",
+    "content": "@Override\r\n    public int hashCode() {\r\n        return Objects.hash(actorId, firstName, lastName, lastUpdate);\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 25,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Category.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.*;\r\nimport java.sql.Timestamp;\r\nimport java.util.Collection;\r\nimport java.util.Objects;\r\n\r\n@Entity\r\npublic class Category {\r\n    private int categoryId;\r\n    private String name;\r\n    private Timestamp lastUpdate;\r\n\r\n    @Id\r\n    @Column(name = \"category_id\")\r\n    public int getCategoryId() {\r\n        return categoryId;\r\n    }\r\n\r\n    public void setCategoryId(int categoryId) {\r\n        this.categoryId = categoryId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"name\")\r\n    public String getName() {\r\n        return name;\r\n    }\r\n\r\n    public void setName(String name) {\r\n        this.name = name;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Category category = (Category) o;\r\n        return categoryId == category.categoryId &&\r\n                Objects.equals(name, category.name) &&\r\n                Objects.equals(lastUpdate, category.lastUpdate);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(categoryId, name, lastUpdate);\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 26,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Customer.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.Basic;\r\nimport javax.persistence.Column;\r\nimport javax.persistence.Entity;\r\nimport javax.persistence.Id;\r\nimport java.sql.Timestamp;\r\nimport java.util.Objects;"
+  },
+  {
+    "id": 27,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Customer.java",
+    "content": "@Entity\r\npublic class Customer"
+  },
+  {
+    "id": 28,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Customer.java",
+    "content": "{\r\n    private int customerId;\r\n    private String firstName;\r\n    private String lastName;\r\n    private String email;\r\n    private byte active;\r\n    private Timestamp createDate;\r\n    private Timestamp lastUpdate;\r\n\r\n    @Id\r\n    @Column(name = \"customer_id\")\r\n    public int getCustomerId() {\r\n        return customerId;\r\n    }\r\n\r\n    public void setCustomerId(int customerId) {\r\n        this.customerId = customerId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"first_name\")\r\n    public String getFirstName() {\r\n        return firstName;\r\n    }\r\n\r\n    public void setFirstName(String firstName) {\r\n        this.firstName = firstName;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_name\")\r\n    public String getLastName() {\r\n        return lastName;\r\n    }\r\n\r\n    public void setLastName(String lastName) {\r\n        this.lastName = lastName;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"email\")\r\n    public String getEmail() {\r\n        return email;\r\n    }\r\n\r\n    public void setEmail(String email) {\r\n        this.email = email;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"active\")\r\n    public byte getActive() {\r\n        return active;\r\n    }\r\n\r\n    public void setActive(byte active) {\r\n        this.active = active;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"create_date\")\r\n    public Timestamp getCreateDate() {\r\n        return createDate;\r\n    }\r\n\r\n    public void setCreateDate(Timestamp createDate) {\r\n        this.createDate = createDate;\r\n    }"
+  },
+  {
+    "id": 29,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Customer.java",
+    "content": "@Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Customer customer = (Customer) o;\r\n        return customerId == customer.customerId &&\r\n                active == customer.active &&\r\n                Objects.equals(firstName, customer.firstName) &&\r\n                Objects.equals(lastName, customer.lastName) &&\r\n                Objects.equals(email, customer.email) &&\r\n                Objects.equals(createDate, customer.createDate) &&\r\n                Objects.equals(lastUpdate, customer.lastUpdate);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(customerId, firstName, lastName, email, active, createDate, lastUpdate);\r\n    }\r\n}"
+  },
+  {
+    "id": 30,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Film.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport org.springframework.format.annotation.DateTimeFormat;\r\n\r\nimport javax.persistence.*;\r\nimport java.math.BigDecimal;\r\nimport java.sql.Timestamp;\r\nimport java.time.LocalDate;\r\nimport java.util.Objects;"
+  },
+  {
+    "id": 31,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Film.java",
+    "content": "@Entity\r\npublic class Film"
+  },
+  {
+    "id": 32,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Film.java",
+    "content": "{\r\n    private int filmId;\r\n    private String title;\r\n    private String description;\r\n    private int releaseYear;\r\n    private Integer rentalDuration;\r\n    private BigDecimal rentalRate;\r\n    private Integer length;\r\n    private BigDecimal replacementCost;\r\n    private String rating;\r\n    private String specialFeatures;\r\n    private Timestamp lastUpdate;\r\n\r\n    @Id\r\n    @Column(name = \"film_id\")\r\n    public int getFilmId() {\r\n        return filmId;\r\n    }\r\n\r\n    public void setFilmId(int filmId) {\r\n        this.filmId = filmId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"title\")\r\n    public String getTitle() {\r\n        return title;\r\n    }\r\n\r\n    public void setTitle(String title) {\r\n        this.title = title;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"description\")\r\n    public String getDescription() {\r\n        return description;\r\n    }\r\n\r\n    public void setDescription(String description) {\r\n        this.description = description;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"release_year\")\r\n    public int getReleaseYear() {\r\n        return releaseYear;\r\n    }\r\n\r\n    public void setReleaseYear(int releaseYear) {\r\n        this.releaseYear = releaseYear;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"rental_duration\")\r\n    public Integer getRentalDuration() {\r\n        return rentalDuration;\r\n    }\r\n\r\n    public void setRentalDuration(Integer rentalDuration) {\r\n        this.rentalDuration = rentalDuration;\r\n    }"
+  },
+  {
+    "id": 33,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Film.java",
+    "content": "@Basic\r\n    @Column(name = \"rental_rate\")\r\n    public BigDecimal getRentalRate() {\r\n        return rentalRate;\r\n    }\r\n\r\n    public void setRentalRate(BigDecimal rentalRate) {\r\n        this.rentalRate = rentalRate;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"length\")\r\n    public Integer getLength() {\r\n        return length;\r\n    }\r\n\r\n    public void setLength(Integer length) {\r\n        this.length = length;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"replacement_cost\")\r\n    public BigDecimal getReplacementCost() {\r\n        return replacementCost;\r\n    }\r\n\r\n    public void setReplacementCost(BigDecimal replacementCost) {\r\n        this.replacementCost = replacementCost;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"rating\")\r\n    public String getRating() {\r\n        return rating;\r\n    }\r\n\r\n    public void setRating(String rating) {\r\n        this.rating = rating;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"special_features\")\r\n    public String getSpecialFeatures() {\r\n        return specialFeatures;\r\n    }\r\n\r\n    public void setSpecialFeatures(String specialFeatures) {\r\n        this.specialFeatures = specialFeatures;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }"
+  },
+  {
+    "id": 34,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Film.java",
+    "content": "@Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Film film = (Film) o;\r\n        return filmId == film.filmId &&\r\n                Objects.equals(title, film.title) &&\r\n                Objects.equals(description, film.description) &&\r\n                Objects.equals(releaseYear, film.releaseYear) &&\r\n                Objects.equals(rentalDuration, film.rentalDuration) &&\r\n                Objects.equals(rentalRate, film.rentalRate) &&\r\n                Objects.equals(length, film.length) &&\r\n                Objects.equals(replacementCost, film.replacementCost) &&\r\n                Objects.equals(rating, film.rating) &&\r\n                Objects.equals(specialFeatures, film.specialFeatures) &&\r\n                Objects.equals(lastUpdate, film.lastUpdate);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(filmId, title, description, releaseYear, rentalDuration, rentalRate, length, replacementCost, rating, specialFeatures, lastUpdate);\r\n    }\r\n}"
+  },
+  {
+    "id": 35,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmActor.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.*;\r\nimport java.sql.Timestamp;\r\nimport java.util.Objects;\r\n\r\n@Entity\r\n@Table(name = \"film_actor\", schema = \"sakila\", catalog = \"\")\r\n@IdClass(FilmActorPK.class)\r\npublic class FilmActor {\r\n    private int actorId;\r\n    private int filmId;\r\n    private Timestamp lastUpdate;\r\n\r\n\r\n    @Id\r\n    @Column(name = \"actor_id\")\r\n    public int getActorId() {\r\n        return actorId;\r\n    }\r\n\r\n    public void setActorId(int actorId) {\r\n        this.actorId = actorId;\r\n    }\r\n\r\n    @Id\r\n    @Column(name = \"film_id\")\r\n    public int getFilmId() {\r\n        return filmId;\r\n    }\r\n\r\n    public void setFilmId(int filmId) {\r\n        this.filmId = filmId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        FilmActor filmActor = (FilmActor) o;\r\n        return actorId == filmActor.actorId &&\r\n                filmId == filmActor.filmId &&\r\n                Objects.equals(lastUpdate, filmActor.lastUpdate);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(actorId, filmId, lastUpdate);\r\n    }\r\n}"
+  },
+  {
+    "id": 36,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmActorPK.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.Column;\r\nimport javax.persistence.Id;\r\nimport java.io.Serializable;\r\nimport java.util.Objects;\r\n\r\npublic class FilmActorPK implements Serializable {\r\n    private int actorId;\r\n    private int filmId;\r\n\r\n    @Column(name = \"actor_id\")\r\n    @Id\r\n    public Integer getActorId() {\r\n        return actorId;\r\n    }\r\n\r\n    public void setActorId(int actorId) {\r\n        this.actorId = actorId;\r\n    }\r\n\r\n    @Column(name = \"film_id\")\r\n    @Id\r\n    public int getFilmId() {\r\n        return filmId;\r\n    }\r\n\r\n    public void setFilmId(int filmId) {\r\n        this.filmId = filmId;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        FilmActorPK that = (FilmActorPK) o;\r\n        return actorId == that.actorId &&\r\n                filmId == that.filmId;\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(actorId, filmId);\r\n    }\r\n}"
+  },
+  {
+    "id": 37,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmCategory.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.*;\r\nimport java.sql.Timestamp;\r\nimport java.util.Objects;\r\n\r\n@Entity\r\n@Table(name = \"film_category\", schema = \"sakila\", catalog = \"\")\r\n@IdClass(FilmCategoryPK.class)\r\npublic class FilmCategory {\r\n    private int filmId;\r\n    private int categoryId;\r\n    private Timestamp lastUpdate;\r\n\r\n\r\n    @Id\r\n    @Column(name = \"film_id\")\r\n    public int getFilmId() {\r\n        return filmId;\r\n    }\r\n\r\n    public void setFilmId(Integer filmId) {\r\n        this.filmId = filmId;\r\n    }\r\n\r\n    @Id\r\n    @Column(name = \"category_id\")\r\n    public int getCategoryId() {\r\n        return categoryId;\r\n    }\r\n\r\n    public void setCategoryId(Integer categoryId) {\r\n        this.categoryId = categoryId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        FilmCategory that = (FilmCategory) o;\r\n        return filmId == that.filmId &&\r\n                categoryId == that.categoryId &&\r\n                Objects.equals(lastUpdate, that.lastUpdate);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(filmId, categoryId, lastUpdate);\r\n    }\r\n}"
+  },
+  {
+    "id": 38,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmCategoryPK.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.Column;\r\nimport javax.persistence.Id;\r\nimport java.io.Serializable;\r\nimport java.util.Objects;\r\n\r\npublic class FilmCategoryPK implements Serializable {\r\n    private int filmId;\r\n    private int categoryId;\r\n\r\n    @Column(name = \"film_id\")\r\n    @Id\r\n    public int getFilmId() {\r\n        return filmId;\r\n    }\r\n\r\n    public void setFilmId(int filmId) {\r\n        this.filmId = filmId;\r\n    }\r\n\r\n    @Column(name = \"category_id\")\r\n    @Id\r\n    public int getCategoryId() {\r\n        return categoryId;\r\n    }\r\n\r\n    public void setCategoryId(int categoryId) {\r\n        this.categoryId = categoryId;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        FilmCategoryPK that = (FilmCategoryPK) o;\r\n        return filmId == that.filmId &&\r\n                categoryId == that.categoryId;\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(filmId, categoryId);\r\n    }\r\n}"
+  },
+  {
+    "id": 39,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\FilmText.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.*;\r\nimport java.util.Objects;\r\n\r\n@Entity\r\n@Table(name = \"film_text\", schema = \"sakila\")\r\npublic class FilmText {\r\n    private int filmId;\r\n    private String title;\r\n    private String description;\r\n\r\n    @Id\r\n    @Column(name = \"film_id\")\r\n    public int getFilmId() {\r\n        return filmId;\r\n    }\r\n\r\n    public void setFilmId(int filmId) {\r\n        this.filmId = filmId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"title\")\r\n    public String getTitle() {\r\n        return title;\r\n    }\r\n\r\n    public void setTitle(String title) {\r\n        this.title = title;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"description\")\r\n    public String getDescription() {\r\n        return description;\r\n    }\r\n\r\n    public void setDescription(String description) {\r\n        this.description = description;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        FilmText filmText = (FilmText) o;\r\n        return filmId == filmText.filmId &&\r\n                Objects.equals(title, filmText.title) &&\r\n                Objects.equals(description, filmText.description);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(filmId, title, description);\r\n    }\r\n}"
+  },
+  {
+    "id": 40,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Inventory.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.*;\r\nimport java.sql.Timestamp;\r\nimport java.util.Objects;\r\n\r\n@Entity\r\npublic class Inventory {\r\n    private int inventoryId;\r\n    private int filmId;\r\n    private Timestamp lastUpdate;\r\n\r\n    @Id\r\n    @Column(name = \"inventory_id\")\r\n    public int getInventoryId() {\r\n        return inventoryId;\r\n    }\r\n\r\n    public void setInventoryId(int inventoryId) {\r\n        this.inventoryId = inventoryId;\r\n    }\r\n\r\n    @Column(name = \"film_id\")\r\n    public int getFilmId() {\r\n        return filmId;\r\n    }\r\n\r\n    public void setFilmId(int filmId) {\r\n        this.filmId = filmId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Inventory inventory = (Inventory) o;\r\n        return inventoryId == inventory.inventoryId &&\r\n                Objects.equals(lastUpdate, inventory.lastUpdate);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(inventoryId, lastUpdate);\r\n    }\r\n}"
+  },
+  {
+    "id": 41,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Order.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\npublic class Order {\r\n    private Customer customer;\r\n    private Film film;\r\n    private Rental rental;\r\n\r\n    public Order(Customer customer, Film film, Rental rental) {\r\n        this.customer = customer;\r\n        this.film = film;\r\n        this.rental = rental;\r\n    }\r\n\r\n    public Customer getCustomer() {\r\n        return customer;\r\n    }\r\n\r\n    public void setCustomer(Customer customer) {\r\n        this.customer = customer;\r\n    }\r\n\r\n    public Film getFilm() {\r\n        return film;\r\n    }\r\n\r\n    public void setFilm(Film film) {\r\n        this.film = film;\r\n    }\r\n\r\n    public Rental getRental() {\r\n        return rental;\r\n    }\r\n\r\n    public void setRental(Rental rental) {\r\n        this.rental = rental;\r\n    }\r\n}"
+  },
+  {
+    "id": 42,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Rental.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.*;\r\nimport java.sql.Timestamp;\r\nimport java.util.Objects;"
+  },
+  {
+    "id": 43,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Rental.java",
+    "content": "@Entity\r\npublic class Rental"
+  },
+  {
+    "id": 44,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Rental.java",
+    "content": "{\r\n    private int rentalId;\r\n    private Timestamp rentalDate;\r\n    private int inventoryId;\r\n    private int customerId;\r\n    private Timestamp returnDate;\r\n    private Timestamp lastUpdate;\r\n    private int staffId;\r\n\r\n    @Id\r\n    @Column(name = \"rental_id\")\r\n    public int getRentalId() {\r\n        return rentalId;\r\n    }\r\n\r\n    public void setRentalId(int rentalId) {\r\n        this.rentalId = rentalId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"rental_date\")\r\n    public Timestamp getRentalDate() {\r\n        return rentalDate;\r\n    }\r\n\r\n    public void setRentalDate(Timestamp rentalDate) {\r\n        this.rentalDate = rentalDate;\r\n    }\r\n\r\n\r\n    @Basic\r\n    @Column(name = \"inventory_id\")\r\n    public int getInventoryId() {\r\n        return inventoryId;\r\n    }\r\n\r\n    public void setInventoryId(int inventoryId) {\r\n        this.inventoryId = inventoryId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"customer_id\")\r\n    public int getCustomerId() {\r\n        return customerId;\r\n    }\r\n\r\n    public void setCustomerId(int customerId) {\r\n        this.customerId = customerId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"return_date\")\r\n    public Timestamp getReturnDate() {\r\n        return returnDate;\r\n    }\r\n\r\n    public void setReturnDate(Timestamp returnDate) {\r\n        this.returnDate = returnDate;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"staff_id\")\r\n    public int getStaffId() {\r\n        return staffId;\r\n    }\r\n\r\n    public void setStaffId(int staffId) {\r\n        this.staffId = staffId;\r\n    }"
+  },
+  {
+    "id": 45,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Rental.java",
+    "content": "@Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Rental rental = (Rental) o;\r\n        return rentalId == rental.rentalId &&\r\n                inventoryId == rental.inventoryId &&\r\n                customerId == rental.customerId &&\r\n                staffId == rental.staffId &&\r\n                Objects.equals(rentalDate, rental.rentalDate) &&\r\n                Objects.equals(returnDate, rental.returnDate) &&\r\n                Objects.equals(lastUpdate, rental.lastUpdate);\r\n    }\r\n\r\n    @Override\r\n    public int hashCode() {\r\n        return Objects.hash(rentalId, inventoryId, customerId, staffId, rentalDate, returnDate, lastUpdate);\r\n    }\r\n}"
+  },
+  {
+    "id": 46,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Staff.java",
+    "content": "package com.sparta.engineering72.sakilaproject.entities;\r\n\r\nimport javax.persistence.Basic;\r\nimport javax.persistence.Column;\r\nimport javax.persistence.Entity;\r\nimport javax.persistence.Id;\r\nimport java.sql.Timestamp;\r\nimport java.util.Arrays;\r\nimport java.util.Objects;"
+  },
+  {
+    "id": 47,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Staff.java",
+    "content": "@Entity\r\npublic class Staff"
+  },
+  {
+    "id": 48,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Staff.java",
+    "content": "{\r\n    private int staffId;\r\n    private String firstName;\r\n    private String lastName;\r\n    private byte[] picture;\r\n    private String email;\r\n    private byte active;\r\n    private String username;\r\n    private String password;\r\n    private Timestamp lastUpdate;\r\n\r\n    @Id\r\n    @Column(name = \"staff_id\")\r\n    public int getStaffId() {\r\n        return staffId;\r\n    }\r\n\r\n    public void setStaffId(int staffId) {\r\n        this.staffId = staffId;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"first_name\")\r\n    public String getFirstName() {\r\n        return firstName;\r\n    }\r\n\r\n    public void setFirstName(String firstName) {\r\n        this.firstName = firstName;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_name\")\r\n    public String getLastName() {\r\n        return lastName;\r\n    }\r\n\r\n    public void setLastName(String lastName) {\r\n        this.lastName = lastName;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"picture\")\r\n    public byte[] getPicture() {\r\n        return picture;\r\n    }\r\n\r\n    public void setPicture(byte[] picture) {\r\n        this.picture = picture;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"email\")\r\n    public String getEmail() {\r\n        return email;\r\n    }\r\n\r\n    public void setEmail(String email) {\r\n        this.email = email;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"active\")\r\n    public byte getActive() {\r\n        return active;\r\n    }\r\n\r\n    public void setActive(byte active) {\r\n        this.active = active;\r\n    }"
+  },
+  {
+    "id": 49,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Staff.java",
+    "content": "@Basic\r\n    @Column(name = \"username\")\r\n    public String getUsername() {\r\n        return username;\r\n    }\r\n\r\n    public void setUsername(String username) {\r\n        this.username = username;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"password\")\r\n    public String getPassword() {\r\n        return password;\r\n    }\r\n\r\n    public void setPassword(String password) {\r\n        this.password = password;\r\n    }\r\n\r\n    @Basic\r\n    @Column(name = \"last_update\")\r\n    public Timestamp getLastUpdate() {\r\n        return lastUpdate;\r\n    }\r\n\r\n    public void setLastUpdate(Timestamp lastUpdate) {\r\n        this.lastUpdate = lastUpdate;\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Staff staff = (Staff) o;\r\n        return staffId == staff.staffId &&\r\n                active == staff.active &&\r\n                Objects.equals(firstName, staff.firstName) &&\r\n                Objects.equals(lastName, staff.lastName) &&\r\n                Arrays.equals(picture, staff.picture) &&\r\n                Objects.equals(email, staff.email) &&\r\n                Objects.equals(username, staff.username) &&\r\n                Objects.equals(password, staff.password) &&\r\n                Objects.equals(lastUpdate, staff.lastUpdate);\r\n    }"
+  },
+  {
+    "id": 50,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\entities\\Staff.java",
+    "content": "@Override\r\n    public int hashCode() {\r\n        int result = Objects.hash(staffId, firstName, lastName, email, active, username, password, lastUpdate);\r\n        result = 31 * result + Arrays.hashCode(picture);\r\n        return result;\r\n    }\r\n}"
+  },
+  {
+    "id": 51,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\ActorRepository.java",
+    "content": "package com.sparta.engineering72.sakilaproject.respositories;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Actor;\r\nimport com.sparta.engineering72.sakilaproject.entities.Film;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.data.jpa.repository.Query;\r\n\r\nimport java.util.List;\r\n\r\npublic interface ActorRepository extends JpaRepository<Actor, Integer>{\r\n    List<Actor> findActorsByFirstNameAndLastName(String firstName, String lastName);\r\n    List<Actor> findActorsByFirstName(String firstName);\r\n    List<Actor> findActorsByLastName(String lastName);\r\n    Actor getActorByActorId(Integer id);\r\n}"
+  },
+  {
+    "id": 52,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\CategoryRepository.java",
+    "content": "package com.sparta.engineering72.sakilaproject.respositories;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Category;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\n\r\nimport java.util.List;\r\n\r\npublic interface CategoryRepository extends JpaRepository<Category, Integer> {\r\n    Category getCategoryByCategoryId(Integer id);\r\n}"
+  },
+  {
+    "id": 53,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\CustomerRepository.java",
+    "content": "package com.sparta.engineering72.sakilaproject.respositories;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Customer;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.data.jpa.repository.Query;\r\n\r\nimport java.util.List;"
+  },
+  {
+    "id": 54,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\CustomerRepository.java",
+    "content": "public interface CustomerRepository extends JpaRepository<Customer, Integer> {\r\n    @Query(value = \"SELECT * FROM customer c WHERE c.email = :username AND c.customer_id = :password\",\r\n            nativeQuery = true)\r\n    Customer getCustomerByCredentials(String username, Integer password);\r\n\r\n    @Query(value = \"SELECT * FROM customer c WHERE c.email = :username\",\r\n            nativeQuery = true)\r\n    Customer getCustomerByUsername(String username);\r\n\r\n    @Query(value = \"SELECT * FROM customer c WHERE c.first_name = :firstName\",\r\n            nativeQuery = true)\r\n    List<Customer> getCustomersByFirstName(String firstName);\r\n\r\n    @Query(value = \"SELECT * FROM customer c WHERE c.last_name = :lastName\",\r\n            nativeQuery = true)\r\n    List<Customer> getCustomersByLastName(String lastName);\r\n\r\n    @Query(value = \"SELECT * FROM customer c WHERE c.first_name = :firstName AND c.last_name = :lastName\",\r\n            nativeQuery = true)\r\n    List<Customer> getCustomersByFullName(String firstName, String lastName);\r\n\r\n    Customer getCustomerByCustomerId(Integer id);\r\n    Customer getCustomerByEmail(String email);\r\n\r\n    @Query(value = \"SELECT COUNT(*) FROM customer c\",\r\n            nativeQuery = true)\r\n    Integer getCustomerCount();\r\n}"
+  },
+  {
+    "id": 55,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\FilmRepository.java",
+    "content": "package com.sparta.engineering72.sakilaproject.respositories;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Actor;\r\nimport com.sparta.engineering72.sakilaproject.entities.Customer;\r\nimport com.sparta.engineering72.sakilaproject.entities.Film;\r\nimport com.sparta.engineering72.sakilaproject.entities.FilmActor;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.data.jpa.repository.Query;\r\n\r\nimport java.util.List;"
+  },
+  {
+    "id": 56,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\FilmRepository.java",
+    "content": "public interface FilmRepository extends JpaRepository<Film, Integer> {\r\n\r\n    @Query(value = \"SELECT count(*) FROM film f INNER JOIN inventory i ON f.film_id = i.film_id WHERE i.film_id = :id\",\r\n            nativeQuery = true)\r\n    Integer getAvailableFilmCount(Integer id);\r\n\r\n    @Query(value = \"SELECT * FROM film f INNER JOIN inventory i ON f.film_id = i.film_id\",\r\n            nativeQuery = true)\r\n    List<Film> getAvailableFilms();\r\n\r\n    @Query(value = \"SELECT * FROM film f INNER JOIN film_category fc ON f.film_id = fc.film_id INNER JOIN category c ON fc.category_id = c.category_id WHERE c.category_id = :categoryId\",\r\n            nativeQuery = true)\r\n    List<Film> getAllFilmsByCategory(Integer categoryId);\r\n\r\n    @Query(value = \"SELECT * FROM actor a INNER JOIN film_actor fa ON a.actor_id = fa.actor_id INNER JOIN film f ON fa.film_id = f.film_id WHERE a.actor_id = :actorId\",\r\n            nativeQuery = true)\r\n    List<Film> getAllFilmsByActor(Integer actorId);\r\n\r\n    List<Film> findByTitle(String title);\r\n    Film getFilmByFilmId(Integer id);\r\n\r\n}"
+  },
+  {
+    "id": 57,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\InventoryRepository.java",
+    "content": "package com.sparta.engineering72.sakilaproject.respositories;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Inventory;\r\nimport com.sparta.engineering72.sakilaproject.entities.Rental;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.data.jpa.repository.Modifying;\r\nimport org.springframework.data.jpa.repository.Query;\r\nimport org.springframework.data.repository.query.Param;\r\n\r\nimport java.util.List;\r\n\r\npublic interface InventoryRepository extends JpaRepository<Inventory, Integer> {\r\n    @Query(value = \"SELECT * FROM inventory i INNER JOIN rental r ON i.inventory_id = r.inventory_id WHERE i.inventory_id = :inventoryId\",\r\n            nativeQuery = true)\r\n    Inventory getInventoriesByInventoryId(Integer inventoryId);\r\n\r\n    @Modifying\r\n    @Query(value = \"DELETE FROM inventory i WHERE i.film_id = :id\",\r\n        nativeQuery = true)\r\n    void deleteInventoryByInventoryId(@Param(\"id\")Integer id);\r\n\r\n    @Query(value = \"SELECT COUNT(*) FROM inventory i\",\r\n            nativeQuery = true)\r\n    Integer getInventoryCount();\r\n\r\n}"
+  },
+  {
+    "id": 58,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\RentalRepository.java",
+    "content": "package com.sparta.engineering72.sakilaproject.respositories;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Rental;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.data.jpa.repository.Query;\r\n\r\nimport java.util.List;\r\n\r\npublic interface RentalRepository extends JpaRepository<Rental, Integer> {\r\n    Rental getRentalByRentalId(Integer id);\r\n    \r\n    @Query(value = \"SELECT * FROM rental r INNER JOIN customer c ON r.customer_id = c.customer_id WHERE c.customer_id = :customerId\",\r\n            nativeQuery = true)\r\n    List<Rental> getRentalByCustomerId(Integer customerId);\r\n\r\n}"
+  },
+  {
+    "id": 59,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\respositories\\StaffRepository.java",
+    "content": "package com.sparta.engineering72.sakilaproject.respositories;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Film;\r\nimport com.sparta.engineering72.sakilaproject.entities.Customer;\r\nimport com.sparta.engineering72.sakilaproject.entities.Staff;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.data.jpa.repository.Query;\r\n\r\npublic interface StaffRepository extends JpaRepository<Staff, Integer> {\r\n\r\n    @Query(value = \"SELECT * FROM staff s WHERE s.username = :username\",\r\n            nativeQuery = true)\r\n    Staff getStaffByUsername(String username);\r\n\r\n}"
+  },
+  {
+    "id": 60,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\SakilaProjectApplication.java",
+    "content": "package com.sparta.engineering72.sakilaproject;\r\n\r\nimport org.springframework.boot.SpringApplication;\r\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\r\n\r\n@SpringBootApplication\r\npublic class SakilaProjectApplication {\r\n\r\n    public static void main(String[] args) {\r\n        SpringApplication.run(SakilaProjectApplication.class, args);\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 61,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\FailureHandler.java",
+    "content": "package com.sparta.engineering72.sakilaproject.securingweb;\r\n\r\nimport org.springframework.security.access.AccessDeniedException;\r\nimport org.springframework.security.web.access.AccessDeniedHandler;\r\nimport org.springframework.stereotype.Component;\r\n\r\nimport javax.persistence.Column;\r\nimport javax.servlet.ServletException;\r\nimport javax.servlet.http.HttpServletRequest;\r\nimport javax.servlet.http.HttpServletResponse;\r\nimport java.io.IOException;\r\n\r\n@Component\r\npublic class FailureHandler implements AccessDeniedHandler {\r\n\r\n    @Override\r\n    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {\r\n        response.sendRedirect(request.getContextPath() + \"/error\");\r\n    }\r\n}"
+  },
+  {
+    "id": 62,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\MvcConfig.java",
+    "content": "package com.sparta.engineering72.sakilaproject.securingweb;\r\n\r\nimport org.springframework.context.annotation.Configuration;\r\nimport org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;\r\nimport org.springframework.web.servlet.config.annotation.ViewControllerRegistry;\r\nimport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;\r\n\r\n@Configuration\r\npublic class MvcConfig implements WebMvcConfigurer{\r\n    public void addViewControllers(ViewControllerRegistry registry) {\r\n        registry.addViewController(\"/home\").setViewName(\"home\");\r\n        registry.addViewController(\"/\").setViewName(\"home\");\r\n        registry.addViewController(\"/login\").setViewName(\"login\");\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 63,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\SuccessHandler.java",
+    "content": "package com.sparta.engineering72.sakilaproject.securingweb;\r\n\r\nimport org.springframework.security.core.Authentication;\r\nimport org.springframework.security.core.GrantedAuthority;\r\nimport org.springframework.security.web.DefaultRedirectStrategy;\r\nimport org.springframework.security.web.RedirectStrategy;\r\nimport org.springframework.security.web.authentication.AuthenticationSuccessHandler;\r\nimport org.springframework.stereotype.Component;\r\n\r\nimport javax.servlet.ServletException;\r\nimport javax.servlet.http.HttpServletRequest;\r\nimport javax.servlet.http.HttpServletResponse;\r\nimport java.io.IOException;\r\nimport java.util.Collection;"
+  },
+  {
+    "id": 64,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\SuccessHandler.java",
+    "content": "@Component\r\npublic class SuccessHandler implements AuthenticationSuccessHandler {\r\n\r\n    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();\r\n\r\n    @Override\r\n    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {\r\n        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();\r\n        authorities.forEach(authority -> {\r\n            if(authority.getAuthority().equals(\"ROLE_USER\")) {\r\n                try {\r\n                    redirectStrategy.sendRedirect(request, response, \"/customer\");\r\n                } catch (Exception e) {\r\n                    // TODO Auto-generated catch block\r\n                    e.printStackTrace();\r\n                }\r\n            } else if(authority.getAuthority().equals(\"ROLE_ADMIN\")) {\r\n                try {\r\n                    redirectStrategy.sendRedirect(request, response, \"/owner\");\r\n                } catch (Exception e) {\r\n                    // TODO Auto-generated catch block\r\n                    e.printStackTrace();\r\n                }\r\n            } else {\r\n                throw new IllegalStateException();\r\n            }\r\n        });\r\n    }\r\n}"
+  },
+  {
+    "id": 65,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\UserDetailsServiceImpl.java",
+    "content": "package com.sparta.engineering72.sakilaproject.securingweb;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Customer;\r\nimport com.sparta.engineering72.sakilaproject.entities.Staff;\r\nimport com.sparta.engineering72.sakilaproject.respositories.CustomerRepository;\r\nimport com.sparta.engineering72.sakilaproject.respositories.StaffRepository;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.security.core.userdetails.User;\r\nimport org.springframework.security.core.userdetails.UserDetails;\r\nimport org.springframework.security.core.userdetails.UserDetailsService;\r\nimport org.springframework.security.core.userdetails.UsernameNotFoundException;\r\nimport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;\r\nimport org.springframework.stereotype.Service;"
+  },
+  {
+    "id": 66,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\UserDetailsServiceImpl.java",
+    "content": "@Service\r\npublic class UserDetailsServiceImpl implements UserDetailsService {\r\n\r\n    @Autowired\r\n    CustomerRepository customerRepository;\r\n\r\n    @Autowired\r\n    StaffRepository staffRepository;\r\n\r\n    @Override\r\n    public UserDetails loadUserByUsername(String anyUsername) throws UsernameNotFoundException {\r\n        Customer customer = customerRepository.getCustomerByEmail(anyUsername);\r\n        Staff staff = staffRepository.getStaffByUsername(anyUsername);\r\n\r\n        User.UserBuilder builder;\r\n\r\n        if(customer == null && staff == null) {\r\n            throw new UsernameNotFoundException(\"Could not find user\");\r\n        } else {\r\n            builder = User.withUsername(anyUsername);\r\n            if(staff != null){\r\n                builder.password(new BCryptPasswordEncoder().encode((staff.getPassword())));\r\n                    builder.roles(\"ADMIN\");\r\n            } else {\r\n                builder.password(new BCryptPasswordEncoder().encode(String.valueOf(customer.getCustomerId())));\r\n                    builder.roles(\"USER\");\r\n            }\r\n            return builder.build();\r\n        }\r\n    }\r\n}"
+  },
+  {
+    "id": 67,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\WebSecurityConfig.java",
+    "content": "package com.sparta.engineering72.sakilaproject.securingweb;\r\n\r\nimport com.sparta.engineering72.sakilaproject.services.CustomerService;\r\nimport com.sparta.engineering72.sakilaproject.services.StaffService;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.context.annotation.Bean;\r\nimport org.springframework.context.annotation.Configuration;\r\nimport org.springframework.security.authentication.dao.DaoAuthenticationProvider;\r\nimport org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;\r\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\r\nimport org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;\r\nimport org.springframework.security.core.userdetails.UserDetailsService;\r\nimport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;"
+  },
+  {
+    "id": 68,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\WebSecurityConfig.java",
+    "content": "@Configuration\r\npublic class WebSecurityConfig extends WebSecurityConfigurerAdapter"
+  },
+  {
+    "id": 69,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\WebSecurityConfig.java",
+    "content": "{\r\n\r\n    @Autowired\r\n    private CustomerService customerService;\r\n\r\n    @Autowired\r\n    private StaffService staffService;\r\n\r\n    @Autowired\r\n    private SuccessHandler successHandler;\r\n\r\n    @Override\r\n    protected void configure(HttpSecurity http) throws Exception { //Defines which URL paths should be secured and which should not\r\n        http\r\n                .authorizeRequests()\r\n                .antMatchers(\"/customer\").hasRole(\"USER\")\r\n                .antMatchers(\"/owner\").hasRole(\"ADMIN\")\r\n                .antMatchers(\r\n                \"/\",\r\n                            \"/images/**\",\r\n                            \"/home\",\r\n                            \"/webjars/**\",\r\n                            \"/css/**\",\r\n                            \"/films/**\",\r\n                            \"/actors/**\",\r\n                            \"/categories/**\"\r\n                            ).permitAll() //Do not require authentication\r\n                .anyRequest().authenticated()\r\n//                .and()\r\n//                .exceptionHandling().accessDeniedPage(\"/accessDenied\")\r\n                .and()\r\n                .formLogin().successHandler(successHandler)\r\n                .loginPage(\"/login\").permitAll() //Custom login page; Everyone is allowed to view\r\n                .and()\r\n                .logout()\r\n                .and().exceptionHandling().accessDeniedPage(\"/error\");\r\n//                .permitAll();\r\n    }"
+  },
+  {
+    "id": 70,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\securingweb\\WebSecurityConfig.java",
+    "content": "@Bean\r\n    @Override\r\n    public UserDetailsService userDetailsService() {\r\n        return new UserDetailsServiceImpl();\r\n    }\r\n\r\n    @Bean\r\n    public PasswordEncoder passwordEncoder() {\r\n        return new BCryptPasswordEncoder();\r\n    }\r\n\r\n    @Bean\r\n    public DaoAuthenticationProvider authenticationProvider() {\r\n        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();\r\n        auth.setUserDetailsService(userDetailsService());\r\n        auth.setPasswordEncoder(passwordEncoder());\r\n        return auth;\r\n    }\r\n\r\n    @Override\r\n    protected void configure(AuthenticationManagerBuilder auth) throws Exception {\r\n        auth.authenticationProvider(authenticationProvider());\r\n    }\r\n}"
+  },
+  {
+    "id": 71,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\ActorService.java",
+    "content": "package com.sparta.engineering72.sakilaproject.services;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Actor;\r\nimport com.sparta.engineering72.sakilaproject.respositories.ActorRepository;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\n\r\n@Service\r\npublic class ActorService {\r\n\r\n    private final ActorRepository actorRepository;\r\n\r\n    public ActorService(ActorRepository actorRepository){\r\n        this.actorRepository = actorRepository;\r\n    }\r\n\r\n    public List<Actor> getAllActors(){\r\n        return (List<Actor>)actorRepository.findAll();\r\n    }\r\n\r\n    public Actor getActorByID(int id){\r\n        return actorRepository.getActorByActorId(id);\r\n    }\r\n\r\n    public List<Actor> getActorsByFullName(String firstName, String lastName){\r\n        return actorRepository.findActorsByFirstNameAndLastName(firstName, lastName);\r\n    }\r\n\r\n    public List<Actor> getActorsByFirstName(String firstName){\r\n        return actorRepository.findActorsByFirstName(firstName);\r\n    }\r\n\r\n    public List<Actor> getActorsByLastName(String lastName){\r\n        return actorRepository.findActorsByLastName(lastName);\r\n    }\r\n\r\n    public String getActorFullNameFromID(Integer id){\r\n        Actor actor = getActorByID(id);\r\n        return actor.getFirstName() + \" \" + actor.getLastName();\r\n    }\r\n\r\n\r\n}"
+  },
+  {
+    "id": 72,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\CategoryService.java",
+    "content": "package com.sparta.engineering72.sakilaproject.services;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Category;\r\nimport com.sparta.engineering72.sakilaproject.respositories.CategoryRepository;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\n\r\n@Service\r\npublic class CategoryService {\r\n\r\n    private final CategoryRepository categoryRepository;\r\n\r\n    public CategoryService(CategoryRepository categoryRepository){\r\n        this.categoryRepository = categoryRepository;\r\n    }\r\n\r\n    public List<Category> getAllCategories(){\r\n        return categoryRepository.findAll();\r\n    }\r\n\r\n    public Category getByCategoryId(Integer id){\r\n        return categoryRepository.getCategoryByCategoryId(id);\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 73,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\CustomerService.java",
+    "content": "package com.sparta.engineering72.sakilaproject.services;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Customer;\r\nimport com.sparta.engineering72.sakilaproject.respositories.CustomerRepository;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;"
+  },
+  {
+    "id": 74,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\CustomerService.java",
+    "content": "@Service\r\npublic class CustomerService {\r\n    private final CustomerRepository customerRepository;\r\n\r\n    public CustomerService(CustomerRepository customerRepository){\r\n        this.customerRepository = customerRepository;\r\n    }\r\n\r\n    public List<Customer> getAllCustomers(){\r\n        return customerRepository.findAll();\r\n    }\r\n\r\n    public List<Customer> getCustomersByFirstName(String firstName){\r\n        return customerRepository.getCustomersByFirstName(firstName);\r\n    }\r\n\r\n    public List<Customer> getCustomersByLastName(String lastName){\r\n        return customerRepository.getCustomersByLastName(lastName);\r\n    }\r\n\r\n    public List<Customer> getCustomersByFullName(String firstName, String lastName){\r\n        return customerRepository.getCustomersByFullName(firstName, lastName);\r\n    }\r\n\r\n    public Customer getCustomerByID(int id){\r\n        return customerRepository.getCustomerByCustomerId(id);\r\n    }\r\n\r\n    public Customer getCustomerByEmail(String email) {\r\n        return customerRepository.getCustomerByEmail(email);\r\n    }\r\n\r\n    public void save(Customer customer) {\r\n        customerRepository.save(customer);\r\n    }\r\n\r\n    public Integer getCustomerCount(){\r\n        return customerRepository.getCustomerCount();\r\n    }\r\n}"
+  },
+  {
+    "id": 75,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\FilmService.java",
+    "content": "package com.sparta.engineering72.sakilaproject.services;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Film;\r\nimport com.sparta.engineering72.sakilaproject.respositories.FilmRepository;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;"
+  },
+  {
+    "id": 76,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\FilmService.java",
+    "content": "@Service\r\npublic class FilmService {\r\n\r\n    private final FilmRepository filmRepository;\r\n\r\n    public FilmService(FilmRepository filmRepository){\r\n        this.filmRepository = filmRepository;\r\n    }\r\n\r\n    public List<Film> getAllFilms(){\r\n        return filmRepository.findAll();\r\n    }\r\n\r\n    public Film getFilmByID(int id){\r\n        return filmRepository.getFilmByFilmId(id);\r\n    }\r\n\r\n    public List<Film> getFilmsByTitle(String title){\r\n        return filmRepository.findByTitle(title);\r\n    }\r\n\r\n    public List<Film> getAvailableFilms(){\r\n        return filmRepository.getAvailableFilms();\r\n    }\r\n\r\n    public Integer getAvailableFilmCount(Integer id){\r\n        return filmRepository.getAvailableFilmCount(id);\r\n    }\r\n\r\n    public List<Film> getFilmsByCategory(Integer id){\r\n        return filmRepository.getAllFilmsByCategory(id);\r\n    }\r\n\r\n    public List<Film> getFilmsByActor(Integer id){\r\n        return filmRepository.getAllFilmsByActor(id);\r\n    }\r\n\r\n    public void save(Film film) {\r\n        filmRepository.save(film);\r\n    }\r\n\r\n    public void deleteFilmById(int id) {\r\n        filmRepository.deleteById(id);\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 77,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\InventoryService.java",
+    "content": "package com.sparta.engineering72.sakilaproject.services;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Inventory;\r\nimport com.sparta.engineering72.sakilaproject.respositories.InventoryRepository;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\n\r\nimport java.util.List;\r\n\r\n@Service\r\npublic class InventoryService {\r\n\r\n    private final InventoryRepository inventoryRepository;\r\n\r\n    public InventoryService(InventoryRepository inventoryRepository){\r\n        this.inventoryRepository = inventoryRepository;\r\n    }\r\n\r\n    public List<Inventory> getAllInventory(){\r\n        return inventoryRepository.findAll();\r\n    }\r\n\r\n    public Inventory getInventoriesById(Integer id){\r\n        return inventoryRepository.getInventoriesByInventoryId(id);\r\n    }\r\n\r\n    @Transactional\r\n    public void deleteInventoryItemById(Integer id){\r\n        inventoryRepository.deleteInventoryByInventoryId(id);\r\n    }\r\n\r\n    public Integer getInventoryCount(){\r\n        return inventoryRepository.getInventoryCount();\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 78,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\RentalService.java",
+    "content": "package com.sparta.engineering72.sakilaproject.services;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Rental;\r\nimport com.sparta.engineering72.sakilaproject.respositories.RentalRepository;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.sql.Timestamp;\r\nimport java.time.LocalDateTime;\r\nimport java.util.List;\r\n\r\n@Service\r\npublic class RentalService {\r\n\r\n    private RentalRepository rentalRepository;\r\n\r\n    public RentalService(RentalRepository rentalRepository) {\r\n        this.rentalRepository = rentalRepository;\r\n    }\r\n\r\n    public List<Rental> getRentalsByCustomer(Integer id){\r\n        return rentalRepository.getRentalByCustomerId(id);\r\n    }\r\n\r\n    public void addRental(int inventoryId, int customerId, Timestamp returnDate){\r\n        LocalDateTime rentalDate = LocalDateTime.now();\r\n        Rental rental = new Rental();\r\n        rental.setInventoryId(inventoryId);\r\n        rental.setCustomerId(customerId);\r\n        rental.setRentalDate(Timestamp.valueOf(rentalDate));\r\n        rental.setLastUpdate(Timestamp.valueOf(rentalDate));\r\n        rental.setReturnDate(returnDate);\r\n        rental.setStaffId(1); //requires default value\r\n        rentalRepository.save(rental);\r\n    }\r\n}"
+  },
+  {
+    "id": 79,
+    "source": "SakilaProject\\src\\main\\java\\com\\sparta\\engineering72\\sakilaproject\\services\\StaffService.java",
+    "content": "package com.sparta.engineering72.sakilaproject.services;\r\n\r\nimport com.sparta.engineering72.sakilaproject.entities.Staff;\r\nimport com.sparta.engineering72.sakilaproject.respositories.StaffRepository;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\n\r\n@Service\r\npublic class StaffService {\r\n    private final StaffRepository staffRepository;\r\n\r\n    public StaffService(StaffRepository staffRepository) {\r\n        this.staffRepository = staffRepository;\r\n    }\r\n\r\n    public List<Staff> getAllStaff(){\r\n        return staffRepository.findAll();\r\n    }\r\n\r\n    public Staff getStaffByUsername(String username){\r\n        return staffRepository.getStaffByUsername(username);\r\n    }\r\n}"
+  },
+  {
+    "id": 80,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<!DOCTYPE html>\r\n<!--\r\n  Flaticon icon font: Flaticon\r\n  Creation date: 20/03/2019 02:18\r\n-->"
+  },
+  {
+    "id": 81,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<html>\r\n<!DOCTYPE html>"
+  },
+  {
+    "id": 82,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<html>"
+  },
+  {
+    "id": 83,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<head>\r\n    <title>Flaticon WebFont</title>\r\n    <link href=\"http://fonts.googleapis.com/css?family=Varela+Round\" rel=\"stylesheet\" type=\"text/css\" />\r\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"flaticon.css\">\r\n    <meta charset=\"UTF-8\">"
+  },
+  {
+    "id": 84,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<style>"
+  },
+  {
+    "id": 85,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "</style>"
+  },
+  {
+    "id": 86,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "</head>"
+  },
+  {
+    "id": 87,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<body class=\"characters-off\">"
+  },
+  {
+    "id": 88,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<header>"
+  },
+  {
+    "id": 89,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<a href=\"https://www.flaticon.com\" target=\"_blank\" class=\"logo\">"
+  },
+  {
+    "id": 90,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:a=\"http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/\" viewBox=\"0 0 560.875 102.036\" enable-background=\"new 0 0 560.875 102.036\" xml:space=\"preserve\">\r\n                <defs>\r\n                </defs>"
+  },
+  {
+    "id": 91,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<g>"
+  },
+  {
+    "id": 92,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<g class=\"letters\">\r\n                        <path fill=\"#ffffff\" d=\"M141.596,29.675c0-3.777,2.985-6.767,6.764-6.767h34.438c3.426,0,6.15,2.728,6.15,6.15\r\n                        c0,3.43-2.724,6.149-6.15,6.149h-27.674v13.091h23.719c3.429,0,6.151,2.724,6.151,6.15c0,3.43-2.723,6.149-6.151,6.149h-23.719\r\n                        v17.574c0,3.773-2.986,6.761-6.764,6.761c-3.779,0-6.764-2.989-6.764-6.761V29.675z\"></path>\r\n                        <path fill=\"#ffffff\" d=\"M193.844,29.149c0-3.781,2.985-6.767,6.764-6.767c3.776,0,6.763,2.985,6.763,6.767v42.957h25.039\r\n                        c3.426,0,6.149,2.726,6.149,6.153c0,3.425-2.723,6.15-6.149,6.15h-31.802c-3.779,0-6.764-2.986-6.764-6.768V29.149z\"></path>\r\n                        <path fill=\"#ffffff\" d=\"M241.891,75.71l21.438-48.407c1.492-3.341,4.215-5.357,7.906-5.357h0.792\r\n                        c3.686,0,6.323,2.017,7.815,5.357l21.439,48.407c0.436,0.967,0.701,1.845,0.701,2.723c0,3.602-2.809,6.501-6.414,6.501\r\n                        c-3.161,0-5.269-1.845-6.499-4.655l-4.132-9.661h-27.059l-4.301,10.102c-1.144,2.631-3.426,4.214-6.237,4.214\r\n                        c-3.517,0-6.24-2.81-6.24-6.325C241.1,77.64,241.451,76.677,241.891,75.71z M279.932,58.666l-8.521-20.297l-8.526,20.297H279.932\r\n                        z\"></path>"
+  },
+  {
+    "id": 93,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<path fill=\"#ffffff\" d=\"M314.864,35.387H301.86c-3.429,0-6.239-2.813-6.239-6.238c0-3.429,2.811-6.24,6.239-6.24h39.533\r\n                        c3.426,0,6.237,2.811,6.237,6.24c0,3.425-2.811,6.238-6.237,6.238h-13.001v42.785c0,3.773-2.99,6.761-6.764,6.761\r\n                        c-3.779,0-6.764-2.989-6.764-6.761V35.387z\"></path>\r\n                        <path fill=\"#A9FD00\" d=\"M352.615,29.149c0-3.781,2.985-6.767,6.767-6.767c3.774,0,6.761,2.985,6.761,6.767v49.024\r\n                        c0,3.773-2.987,6.761-6.761,6.761c-3.781,0-6.767-2.989-6.767-6.761V29.149z\"></path>\r\n                        <path fill=\"#A9FD00\" d=\"M374.132,53.836v-0.179c0-17.481,13.178-31.801,32.065-31.801c9.22,0,15.459,2.458,20.557,6.238\r\n                        c1.402,1.054,2.637,2.985,2.637,5.357c0,3.692-2.985,6.59-6.681,6.59c-1.845,0-3.071-0.702-4.044-1.319\r\n                        c-3.776-2.813-7.729-4.393-12.562-4.393c-10.364,0-17.831,8.611-17.831,19.154v0.173c0,10.542,7.291,19.329,17.831,19.329\r\n                        c5.715,0,9.492-1.756,13.359-4.834c1.049-0.874,2.458-1.491,4.039-1.491c3.429,0,6.325,2.813,6.325,6.236\r\n                        c0,2.106-1.056,3.78-2.282,4.834c-5.539,4.834-12.036,7.733-21.878,7.733C387.572,85.464,374.132,71.493,374.132,53.836z\"></path>"
+  },
+  {
+    "id": 94,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<path fill=\"#A9FD00\" d=\"M433.009,53.836v-0.179c0-17.481,13.79-31.801,32.766-31.801c18.981,0,32.592,14.143,32.592,31.628v0.173\r\n                        c0,17.483-13.785,31.807-32.769,31.807C446.625,85.464,433.009,71.32,433.009,53.836z M484.224,53.836v-0.179\r\n                        c0-10.539-7.725-19.326-18.626-19.326c-10.893,0-18.449,8.611-18.449,19.154v0.173c0,10.542,7.73,19.329,18.626,19.329\r\n                        C476.676,72.986,484.224,64.378,484.224,53.836z\"></path>\r\n                        <path fill=\"#A9FD00\" d=\"M506.233,29.321c0-3.774,2.99-6.763,6.767-6.763h1.401c3.252,0,5.183,1.583,7.029,3.953l26.093,34.265\r\n                        V29.059c0-3.692,2.99-6.677,6.681-6.677c3.683,0,6.671,2.985,6.671,6.677v48.934c0,3.78-2.987,6.765-6.764,6.765h-0.436\r\n                        c-3.257,0-5.188-1.581-7.034-3.953l-27.056-35.492v32.944c0,3.687-2.985,6.676-6.678,6.676c-3.683,0-6.673-2.989-6.673-6.676\r\n                        V29.321z\"></path>\r\n                    </g>"
+  },
+  {
+    "id": 95,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<g class=\"insignia\">\r\n                        <path fill=\"#ffffff\" d=\"M48.372,56.137h12.517l11.156-18.537H37.186L25.688,18.539h57.825L94.668,0H9.271\r\n                        C5.925,0,2.842,1.801,1.198,4.716c-1.644,2.907-1.593,6.482,0.134,9.343l50.38,83.501c1.678,2.781,4.689,4.476,7.938,4.476\r\n                        c3.246,0,6.257-1.695,7.935-4.476l2.898-4.804L48.372,56.137z\"></path>\r\n                        <g class=\"i\">\r\n                            <path fill=\"#A9FD00\" d=\"M93.575,18.539h0.031v0.004l21.652,0.004l2.705-4.488c1.727-2.861,1.778-6.436,0.133-9.343\r\n                            C116.454,1.801,113.371,0,110.026,0h-5.294L93.575,18.539z\"></path>\r\n                            <polygon fill=\"#A9FD00\" points=\"88.291,27.356 64.725,66.486 75.519,84.404 109.942,27.356\"></polygon>\r\n                        </g>\r\n                    </g>\r\n                </g>"
+  },
+  {
+    "id": 96,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "</svg>"
+  },
+  {
+    "id": 97,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "</a>"
+  },
+  {
+    "id": 98,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<strong>Font Demo</strong>\r\n    </header>"
+  },
+  {
+    "id": 99,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<section class=\"demo wrapper\">\r\n\r\n        <p class=\"title\">Instructions</p>"
+  },
+  {
+    "id": 100,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<ul>\r\n            <li>\r\n                <span class=\"num\">1</span>Copy the \"Fonts\" files and CSS files to your website CSS folder.\r\n            </li>\r\n            <li>\r\n                <span class=\"num\">2</span>Add the CSS link to your website source code on header.\r\n                <code class=\"big\">\r\n                    &lt;<span class=\"red\">head</span>&gt;\r\n                    <br/><span class=\"dots\">...</span>\r\n                    <br/>&lt;<span class=\"red\">link</span> <span class=\"green\">rel</span>=<span class=\"yellow\">\"stylesheet\"</span> <span class=\"green\">type</span>=<span class=\"yellow\">\"text/css\"</span> <span class=\"green\">href</span>=<span class=\"yellow\">\"your_website_domain/css_root/flaticon.css\"</span>&gt;\r\n                    <br/><span class=\"dots\">...</span>\r\n                    <br/>&lt;/<span class=\"red\">head</span>&gt;\r\n                </code>\r\n            </li>"
+  },
+  {
+    "id": 101,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<li>\r\n                <p>\r\n                    <span class=\"num\">3</span>Use the icon class on <code>\"<span class=\"blue\">display</span>:<span class=\"purple\"> inline</span>\"</code> elements:\r\n                    <br />\r\n                    Use example: <code>&lt;<span class=\"red\">i</span> <span class=\"green\">class</span>=<span class=\"yellow\">&quot;flaticon-airplane49&quot;</span>&gt;&lt;/<span class=\"red\">i</span>&gt;</code> or <code>&lt;<span class=\"red\">span</span> <span class=\"green\">class</span>=<span class=\"yellow\">&quot;flaticon-airplane49&quot;</span>&gt;&lt;/<span class=\"red\">span</span>&gt;</code>\r\n            </li>\r\n        </ul>"
+  },
+  {
+    "id": 102,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "</section>"
+  },
+  {
+    "id": 103,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<section id=\"glyphs\">          \r\n    \r\n      \r\n        <div class=\"glyph\"><div class=\"glyph-icon flaticon-ideas\"></div>\r\n            <div class=\"class-name\">.flaticon-ideas</div>\r\n            <div class=\"author-name\">Author: <a data-file=\"001-ideas\" href=\"http://www.freepik.com\">Freepik</a> </div> \r\n        </div>        \r\n        \r\n        <div class=\"glyph\"><div class=\"glyph-icon flaticon-flasks\"></div>\r\n            <div class=\"class-name\">.flaticon-flasks</div>\r\n            <div class=\"author-name\">Author: <a data-file=\"002-flasks\" href=\"http://www.freepik.com\">Freepik</a> </div> \r\n        </div>        \r\n        \r\n        <div class=\"glyph\"><div class=\"glyph-icon flaticon-analysis\"></div>\r\n            <div class=\"class-name\">.flaticon-analysis</div>\r\n            <div class=\"author-name\">Author: <a data-file=\"003-analysis\" href=\"http://www.freepik.com\">Freepik</a> </div> \r\n        </div>        \r\n        \r\n        <div class=\"glyph\"><div class=\"glyph-icon flaticon-ux-design\"></div>\r\n            <div class=\"class-name\">.flaticon-ux-design</div>\r\n            <div class=\"author-name\">Author: <a data-file=\"004-ux-design\" href=\"http://www.freepik.com\">Freepik</a> </div> \r\n        </div>"
+  },
+  {
+    "id": 104,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<div class=\"glyph\"><div class=\"glyph-icon flaticon-web-design\"></div>\r\n            <div class=\"class-name\">.flaticon-web-design</div>\r\n            <div class=\"author-name\">Author: <a data-file=\"005-web-design\" href=\"https://www.flaticon.com/authors/monkik\">monkik</a> </div> \r\n        </div>        \r\n        \r\n        <div class=\"glyph\"><div class=\"glyph-icon flaticon-idea\"></div>\r\n            <div class=\"class-name\">.flaticon-idea</div>\r\n            <div class=\"author-name\">Author: <a data-file=\"006-idea\" href=\"https://www.flaticon.com/authors/smashicons\">Smashicons</a> </div> \r\n        </div>        \r\n        \r\n        <div class=\"glyph\"><div class=\"glyph-icon flaticon-innovation\"></div>\r\n            <div class=\"class-name\">.flaticon-innovation</div>\r\n            <div class=\"author-name\">Author: <a data-file=\"007-innovation\" href=\"https://www.flaticon.com/authors/geotatah\">geotatah</a> </div> \r\n        </div>        \r\n        \r\n\r\n    </section>"
+  },
+  {
+    "id": 105,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<section class=\"attribution wrapper\"   style=\"text-align:center;\">\r\n\r\n      <div class=\"title\">License and attribution:</div><div class=\"attrDiv\">Font generated by <a href=\"https://www.flaticon.com\">flaticon.com</a>. <div><p>Under <a href=\"http://creativecommons.org/licenses/by/3.0/\">CC</a>: <a data-file=\"004-ux-design\" href=\"http://www.freepik.com\">Freepik</a>, <a data-file=\"005-web-design\" href=\"https://www.flaticon.com/authors/monkik\">monkik</a>, <a data-file=\"006-idea\" href=\"https://www.flaticon.com/authors/smashicons\">Smashicons</a>, <a data-file=\"007-innovation\" href=\"https://www.flaticon.com/authors/geotatah\">geotatah</a></p>  </div>\r\n      </div>\r\n      <div class=\"title\">Copy the Attribution License:</div>\r\n\r\n    <textarea onclick=\"this.focus();this.select();\">Font generated by &lt;a href=&quot;https://www.flaticon.com&quot;&gt;flaticon.com&lt;/a&gt;. <p>Under <a href=\"http://creativecommons.org/licenses/by/3.0/\">CC</a>: <a data-file=\"004-ux-design\" href=\"http://www.freepik.com\">Freepik</a>, <a data-file=\"005-web-design\" href=\"https://www.flaticon.com/authors/monkik\">monkik</a>, <a data-file=\"006-idea\" href=\"https://www.flaticon.com/authors/smashicons\">Smashicons</a>, <a data-file=\"007-innovation\" href=\"https://www.flaticon.com/authors/geotatah\">geotatah</a></p> \r\n    </textarea>\r\n\r\n    </section>"
+  },
+  {
+    "id": 106,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "<section class=\"iconsuse\">\r\n\r\n          <div class=\"title\">Examples:</div>            \r\n             \r\n            <div class=\"image\">\r\n                <p>\r\n                    <i class=\"glyph-icon flaticon-ideas\"></i> \r\n                    <span>&lt;i class=&quot;flaticon-ideas&quot;&gt;&lt;/i&gt;</span>\r\n                </p>\r\n            </div>\r\n            \r\n            <div class=\"image\">\r\n                <p>\r\n                    <i class=\"glyph-icon flaticon-flasks\"></i> \r\n                    <span>&lt;i class=&quot;flaticon-flasks&quot;&gt;&lt;/i&gt;</span>\r\n                </p>\r\n            </div>\r\n            \r\n            <div class=\"image\">\r\n                <p>\r\n                    <i class=\"glyph-icon flaticon-analysis\"></i> \r\n                    <span>&lt;i class=&quot;flaticon-analysis&quot;&gt;&lt;/i&gt;</span>\r\n                </p>\r\n            </div>\r\n            \r\n            <div class=\"image\">\r\n                <p>\r\n                    <i class=\"glyph-icon flaticon-ux-design\"></i> \r\n                    <span>&lt;i class=&quot;flaticon-ux-design&quot;&gt;&lt;/i&gt;</span>\r\n                </p>\r\n            </div>\r\n                       \r\n        </div>\r\n                            \r\n    </section>\r\n\r\n<div id=\"footer\">\r\n    <div>Generated by <a href=\"https://www.flaticon.com\">flaticon.com</a>\r\n    </div>\r\n</div>\r\n\r\n\r\n\r\n</body>"
+  },
+  {
+    "id": 107,
+    "source": "SakilaProject\\src\\main\\resources\\static\\fonts\\flaticon\\font\\flaticon.html",
+    "content": "</html>"
+  },
+  {
+    "id": 108,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actorDetails.html",
+    "content": "<!DOCTYPE html>\r\n<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>\r\n\r\n<body>\r\n\r\n    <div layout:fragment=\"content\">\r\n\r\n        <h1 style=\"text-align: center\" th:action=\"${films}\" th:text=\"${name}\"></h1>\r\n\r\n        <table style=\"text-align-last: center;\">\r\n\r\n            <tr>\r\n                <th>Title</th>\r\n                <th>Description</th>\r\n            </tr>\r\n            <tr th:each=\"film: ${films}\">\r\n                <td><a class=\"hyperlink-text\" th:href=\"@{/films/details(id=${film.filmId})}\" th:text=\"${film.title}\">Film</a></td>\r\n                <td th:text=\"${film.description}\" th:action=\"${film.filmId}\">Film Info</td>\r\n            </tr>\r\n\r\n        </table>\r\n\r\n    </div>\r\n\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 109,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 110,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "content": "<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>"
+  },
+  {
+    "id": 111,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "content": "<body>"
+  },
+  {
+    "id": 112,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "content": "<div layout:fragment=\"content\">\r\n\r\n        <h1 style=\"text-align: center\">BROWSE OUR ACTORS</h1>\r\n\r\n        <form class=\"filter\" action=\"/actors\">\r\n            <table class=\"filter-table\">\r\n                <tr>\r\n                    <td class=\"no-border\">\r\n                        <label>\r\n                            First Name:\r\n                            <select name=\"firstName\" class=\"selection-menu\">\r\n                                <option>ALL ACTORS</option>\r\n                                <option th:each=\"actor: ${allActors}\" th:text=\"${actor.firstName}\">\r\n                            </select>\r\n\r\n                            Last Name:\r\n                            <select name=\"lastName\" class=\"selection-menu\">\r\n                                <option>ALL ACTORS</option>\r\n                                <option th:each=\"actor: ${allActors}\" th:text=\"${actor.lastName}\">\r\n                            </select>\r\n                        </label>\r\n                    </td>\r\n                    <td class=\"no-border\">\r\n                        <input type=\"submit\" value=\"Search\" class=\"button\">\r\n                    </td>\r\n                </tr>\r\n            </table>\r\n        </form>"
+  },
+  {
+    "id": 113,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "content": "<div class=\"actor-container\">\r\n            <table style=\"text-align-last: center;\">\r\n                <tr>\r\n                    <th>Actor ID</th>\r\n                    <th>First Name</th>\r\n                    <th>Last Name</th>\r\n                </tr>\r\n                <tr th:each=\"actor: ${actors}\">\r\n                    <td><a class=\"hyperlink-text\" th:href=\"@{actors/details(id=${actor.actorId})}\" th:text=\"${actor.actorId}\">Actor</a></td>\r\n                    <td th:text=\"${actor.firstName}\"></td>\r\n                    <td th:text=\"${actor.lastName}\"></td>\r\n                </tr>\r\n            </table>\r\n        </div>\r\n\r\n    </div>"
+  },
+  {
+    "id": 114,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "content": "</body>"
+  },
+  {
+    "id": 115,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\actors\\actors.html",
+    "content": "</html>"
+  },
+  {
+    "id": 116,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\categories\\categories.html",
+    "content": "<!DOCTYPE html>\r\n<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>\r\n\r\n<body>\r\n\r\n<div layout:fragment=\"content\">\r\n    <h1 style=\"text-align: center;\">BROWSE OUR CATEGORIES</h1>\r\n    <table style=\"text-align-last: center;\">\r\n        <tr>\r\n            <th>Category Name</th>\r\n        </tr>\r\n        <tr th:each=\"category: ${allCategories}\">\r\n            <td><a class=\"hyperlink-text\" th:href=\"@{categories/details(id=${category.categoryId})}\" th:text=\"${category.name}\"></a></td>\r\n        </tr>\r\n    </table>\r\n</div>\r\n\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 117,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\categories\\categoryDetails.html",
+    "content": "<!DOCTYPE html>\r\n<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>\r\n\r\n<body>\r\n\r\n<div layout:fragment=\"content\">\r\n\r\n    <h1 style=\"text-align: center\" th:action=\"${films}\" th:text=\"${category.name}\"></h1>\r\n\r\n    <table class=\"center-block\">\r\n\r\n        <tr>\r\n            <th class=\"th-centered\">Film Title</th>\r\n            <th class=\"th-centered\">Film Description</th>\r\n        </tr>\r\n        <tr th:each=\"film: ${films}\">\r\n            <td><a class=\"hyperlink-text\" th:href=\"@{/films/details(id=${film.filmId})}\" th:text=\"${film.title}\">Film</a></td>\r\n            <td th:text=\"${film.description}\" th:action=\"${film.filmId}\">Film Info</td>\r\n        </tr>\r\n\r\n    </table>\r\n\r\n</div>\r\n\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 118,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 119,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "content": "<html lang=\"en\" xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"https://www.thymeleaf.org\"\r\n      xmlns:sec=\"https://www.thymeleaf.org/thymeleaf-extras-springsecurity3\"\r\n      layout:decorator=\"layout/layout\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Title</title>\r\n</head>"
+  },
+  {
+    "id": 120,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "content": "<body>"
+  },
+  {
+    "id": 121,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "content": "<div layout:fragment=\"content\">\r\n    <div class=\"row\">\r\n        <div class=\"col-sm-8\">\r\n            <h1 th:text=\"${customer != null} ? ${'Hello, ' + (customer.firstName.concat(' ' + customer.lastName).toUpperCase())} : 'Hello, Customer'\">Welcome back, CUSTOMER </h1>\r\n        </div>\r\n        <div class=\"col-sm-4\">\r\n            <form th:action=\"@{/logout}\" method=\"post\">\r\n                <input class=\"button\" type=\"submit\" value=\"Sign Out\"/>\r\n            </form>\r\n        </div>\r\n    </div>\r\n\r\n    <table>\r\n        <tr>\r\n            <th>First Name:</th>\r\n            <td  th:text=\"${customer != null} ? ${customer.firstName} : 'N/A'\"></td>\r\n        </tr>\r\n        <tr>\r\n            <th>Last Name:</th>\r\n            <td th:text=\"${customer != null} ? ${customer.lastName} : 'N/A'\"></td>\r\n        </tr>\r\n        <tr>\r\n            <th>Email:</th>\r\n            <td th:text=\"${customer != null} ? ${customer.email} : 'N/A'\"></td>\r\n        </tr>\r\n        <tr>\r\n            <th>Registration Date:</th>\r\n            <td th:text=\"${customer != null} ? ${customer.createDate} : 'N/A'\"></td>\r\n        </tr>\r\n    </table>\r\n\r\n    <hr>\r\n    <h1 style=\"text-align:center;\">Rented Films</h1>\r\n    <hr>"
+  },
+  {
+    "id": 122,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "content": "<form class=\"form-group\" name=\"orders\">\r\n        <table  style=\"text-align-last: center;\">\r\n            <tr>\r\n                <th>Film Title</th>\r\n                <th>Rental Date</th>\r\n                <th>Return Date</th>\r\n            </tr>\r\n            <tr th:each=\"order: ${orders}\">\r\n                <td><a class=\"hyperlink-text\" th:href=\"@{films/details(id=${order.film.filmId})}\"  th:text=\"${order.film.title}\">Film</a></td>\r\n                <td th:text=\"${order.rental.rentalDate}\"></td>\r\n                <td th:text=\"${order.rental.returnDate}\"></td>\r\n            </tr>\r\n        </table>\r\n    </form>\r\n\r\n</div>"
+  },
+  {
+    "id": 123,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "content": "</body>"
+  },
+  {
+    "id": 124,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\customer\\customer.html",
+    "content": "</html>"
+  },
+  {
+    "id": 125,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\error.html",
+    "content": "<!DOCTYPE html>\r\n<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>\r\n\r\n<body>\r\n\r\n<!--\t<div layout:fragment=\"navigation\">-->\r\n<!--\t\t<div th:replace=\"fragments/navigation :: navigation\"></div>-->\r\n<!--\t</div>-->\r\n\r\n<div layout:fragment=\"content\">\r\n    <h1 style=\"text-align: center\">You can't do that!</h1>\r\n    <img alt=\"Explosion\" th:src=\"@{/images/explosion.jpeg}\" style=\"width: 100%\"/>\r\n    </div>\r\n</div>\r\n\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 126,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 127,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "content": "<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:sec=\"http://www.thymeleaf.org/thymeleaf-extras-springsecurity4\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>"
+  },
+  {
+    "id": 128,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "content": "<body>"
+  },
+  {
+    "id": 129,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "content": "<div layout:fragment=\"content\">\r\n\r\n\r\n    <h1 style=\"text-align: center\" th:action=\"${details}\" th:text=\"${details.title}\"></h1>\r\n    <table class=\"center-block\">\r\n        <tr >\r\n            <th>Description:</th>\r\n            <td th:text=\"${details.description}\">Film Info</td>\r\n        </tr>\r\n        <tr >\r\n            <th>Release Year:</th>\r\n            <td th:text=\"${details.releaseYear}\">Film Info</td>\r\n        </tr>\r\n        <tr >\r\n            <th>Film Length:</th>\r\n            <td th:text=\"${details.length} + ' ' + minutes\">Film Info</td>\r\n        </tr>\r\n        <tr >\r\n            <th>Film Rating:</th>\r\n            <td th:text=\"${details.rating}\">Film Info</td>\r\n        </tr>\r\n        <tr>\r\n            <th>Special Features:</th>\r\n            <td th:text=\"${details.specialFeatures}\">Film Info</td>\r\n        </tr>\r\n        <tr >\r\n            <th>Rental Duration:</th>\r\n            <td th:text=\"${details.rentalDuration} + ' ' + days\">Film Info</td>\r\n        </tr>\r\n        <tr>\r\n            <th>Rental Cost:</th>\r\n            <td th:text=\"${details.rentalRate}\">Film Info</td>\r\n        </tr>\r\n        <tr>\r\n            <th>Status:</th>\r\n            <td th:text=\"${available} ? 'Available' : 'Not Available'\">Film Info</td>\r\n        </tr>\r\n    </table>"
+  },
+  {
+    "id": 130,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "content": "<div sec:authorize=\"isAuthenticated()\" class=\"rentButton\">\r\n        <form th:if=\"${available == true}\" th:action=\"@{/rent/{id}(id=${details.filmId})}\">\r\n            <input class=\"button\" type=\"submit\" value=\"Rent Film\" />\r\n        </form>\r\n    </div>\r\n</div>"
+  },
+  {
+    "id": 131,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "content": "</body>"
+  },
+  {
+    "id": 132,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\filmDetails.html",
+    "content": "</html>"
+  },
+  {
+    "id": 133,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\films.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 134,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\films.html",
+    "content": "<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>"
+  },
+  {
+    "id": 135,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\films\\films.html",
+    "content": "<body>\r\n\r\n<div layout:fragment=\"content\">\r\n\r\n    <h1 style=\"text-align: center\">BROWSE OUR FILMS</h1>\r\n\r\n    <form class=\"filter\" action=\"/films\">\r\n        <table>\r\n            <tr>\r\n                <td class=\"no-border\">\r\n                    <label>\r\n                        <select name=\"title\" class=\"selection-menu\">\r\n                            <option>ALL FILMS</option>\r\n                            <option th:each=\"film: ${allFilms}\" th:text=\"${film.title}\">\r\n                        </select>\r\n                    </label>\r\n                </td>\r\n                <td class=\"no-border\">\r\n                    <input type=\"submit\" value=\"Search\" class=\"button\">\r\n                </td>\r\n            </tr>\r\n        </table>\r\n    </form>\r\n    <table style=\"text-align-last: center;\">\r\n        <tr>\r\n            <th>Availability</th>\r\n            <th>Film Title</th>\r\n            <th>Film Description</th>\r\n        </tr>\r\n        <tr th:each=\"film: ${films}\">\r\n            <td  th:text=\"${availableFilms.contains(film)} ? Available : Rented\"></td>\r\n            <td><a class=\"hyperlink-text\" th:href=\"@{films/details(id=${film.filmId})}\" th:text=\"${film.title}\">Film</a></td>\r\n            <td th:text=\"${film.description}\" th:action=\"${film.filmId}\">Film Info</td>\r\n        </tr>\r\n    </table>\r\n\r\n\r\n</div>\r\n\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 136,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 137,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<html xmlns:th=\"http://www.thymeleaf.org\">\r\n\r\n<head>\r\n\t<title>Footer</title>\r\n</head>"
+  },
+  {
+    "id": 138,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<body>"
+  },
+  {
+    "id": 139,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<footer class=\"footer\" th:fragment=\"footer\">"
+  },
+  {
+    "id": 140,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<div class=\"ftco-footer ftco-section\">"
+  },
+  {
+    "id": 141,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<div class=\"container\">"
+  },
+  {
+    "id": 142,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<div class=\"row mb-5\">\r\n\t\t\t\t\t<div class=\"col-md\">\r\n\t\t\t\t\t\t<div class=\"ftco-footer-widget mb-4\">\r\n\t\t\t\t\t\t\t<h2 class=\"ftco-heading-2\">About</h2>\r\n\t\t\t\t\t\t\t<p>Thank you for visiting our Sakila film store! Have a nice day.</p>\r\n\t\t\t\t\t\t\t<ul class=\"ftco-footer-social list-unstyled float-md-left float-lft mt-5\">\r\n\t\t\t\t\t\t\t\t<li class=\"ftco-animate fadeInUp ftco-animated\"><a href=\"https://www.linkedin.com/in/svilen-petrov-7469181a1/\"><span class=\"fa fa-linkedin-square\"></span></a></li>\r\n\t\t\t\t\t\t\t\t<li class=\"ftco-animate fadeInUp ftco-animated\"><a href=\"https://twitter.com/svilenpetrov_\"><span class=\"icon-twitter\"></span></a></li>\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"col-md\">\r\n\t\t\t\t\t\t<div class=\"ftco-footer-widget mb-4 ml-md-4\">\r\n\t\t\t\t\t\t\t<h2 class=\"ftco-heading-2\">Quick Access</h2>\r\n\t\t\t\t\t\t\t<ul class=\"list-unstyled\">\r\n\t\t\t\t\t\t\t\t<li>\r\n\t\t\t\t\t\t\t\t\t<a href=\"#\"><span class=\"icon-long-arrow-right mr-2\"></span>Home</a>\r\n\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t<li>\r\n\t\t\t\t\t\t\t\t\t<a href=\"#login-section\"><span class=\"icon-long-arrow-right mr-2\"></span>Login</a>\r\n\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t<li>\r\n\t\t\t\t\t\t\t\t\t<a href=\"#register-section\"><span class=\"icon-long-arrow-right mr-2\"></span>Register</a>\r\n\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>"
+  },
+  {
+    "id": 143,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<div class=\"col-md\">\r\n\t\t\t\t\t\t<div class=\"ftco-footer-widget mb-4\">\r\n\t\t\t\t\t\t\t<h2 class=\"ftco-heading-2\">Services</h2>\r\n\t\t\t\t\t\t\t<ul class=\"list-unstyled\">\r\n\t\t\t\t\t\t\t\t<li><a href=\"#services-section\"><span class=\"icon-long-arrow-right mr-2\"></span>Actors</a></li>\r\n\t\t\t\t\t\t\t\t<li><a href=\"#services-section\"><span class=\"icon-long-arrow-right mr-2\"></span>Films</a></li>\r\n\t\t\t\t\t\t\t\t<li><a href=\"#services-section\"><span class=\"icon-long-arrow-right mr-2\"></span>Categories</a></li>\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"col-md\">\r\n\t\t\t\t\t\t<div class=\"ftco-footer-widget mb-4\">\r\n\t\t\t\t\t\t\t<h2 class=\"ftco-heading-2\">Have any questions?</h2>\r\n\t\t\t\t\t\t\t<div class=\"block-23 mb-3\">\r\n\t\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t\t<li><a href=\"#\"><span class=\"icon icon-envelope\"></span><span class=\"text\">spetrov@spartaglobal.com</span></a></li>\r\n\t\t\t\t\t\t\t\t\t<li><a href=\"#\"><span class=\"icon icon-envelope\"></span><span class=\"text\">eburaimo@spartaglobal.com</span></a></li>\r\n\t\t\t\t\t\t\t\t\t<li><a href=\"#\"><span class=\"icon icon-envelope\"></span><span class=\"text\">jkovacevic@spartaglobal.com</span></a></li>\r\n\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>"
+  },
+  {
+    "id": 144,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "<div class=\"row\">\r\n\t\t\t\t\t<div class=\"col-md-12 text-center\">\r\n\t\t\t\t\t\t<p>\r\n\t\t\t\t\t\t\tCopyright \u00a9\r\n\t\t\t\t\t\t\t<script>document.write(new Date().getFullYear());</script> All rights reserved\r\n\t\t\t\t\t\t</p>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>"
+  },
+  {
+    "id": 145,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "</div>"
+  },
+  {
+    "id": 146,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "</div>\r\n</footer>"
+  },
+  {
+    "id": 147,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "</body>"
+  },
+  {
+    "id": 148,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\footer.html",
+    "content": "</html>"
+  },
+  {
+    "id": 149,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\header.html",
+    "content": "<!DOCTYPE html>\r\n\r\n<html lang=\"en\" xmlns:th=\"http://www.thymeleaf.org\">\r\n\r\n<head th:fragment=\"header\">\r\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\r\n    <title>The Dependables Film Store</title>\r\n\r\n    <meta name=\"keywords\" content=\"Home\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" />\r\n\r\n    <link rel=\"stylesheet\" type=\"text/css\" th:href=\"@{/webjars/bootstrap/4.5.2/css/bootstrap.min.css}\"/>\r\n    <link rel=\"stylesheet\" type=\"text/css\" th:href=\"@{/webjars/font-awesome/4.6.3/css/font-awesome-jsf.css}\"/>\r\n\r\n    <link rel=\"stylesheet\" type=\"text/css\" th:href=\"@{/css/open-iconic-bootstrap.min.css}\"/>\r\n    <link rel=\"stylesheet\" type=\"text/css\" th:href=\"@{/css/animate.css}\"/>\r\n\r\n    <link rel=\"stylesheet\" type=\"text/css\" th:href=\"@{/css/csshake.min.css}\"/>\r\n\r\n\r\n    <link rel=\"stylesheet\" type=\"text/css\" th:href=\"@{/css/style.css}\"/>\r\n    <link href=\"https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900\" rel=\"stylesheet\"/>\r\n\r\n    <script src=\"webjars/jquery/3.5.1/jquery.min.js\"></script>\r\n    <script\tsrc=\"webjars/bootstrap/4.5.2/js/bootstrap.min.js\"></script>\r\n</head>\r\n\r\n<body>\r\n\r\n\r\n</body>\r\n\r\n</html>"
+  },
+  {
+    "id": 150,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\fragments\\navigation.html",
+    "content": "<!DOCTYPE html>\r\n\r\n<html lang=\"en\"  xmlns:th=\"http://www.thymeleaf.org\"\r\n\t  xmlns:sec=\"http://www.thymeleaf.org/thymeleaf-extras-springsecurity4\">\r\n\r\n<head>\r\n<title>NavBar</title>\r\n</head>\r\n\r\n<body>\r\n\r\n\t<div th:fragment=\"navigation\">\r\n\t\t<ul id=\"top-navbar\">\r\n\t\t\t<li><a class=\"active hyperlink-text-home\" href=\"/home\">Home</a></li>\r\n\t\t\t<li><a class=\"hyperlink-text-nav\" href=\"/actors\">Actors</a></li>\r\n\t\t\t<li><a class=\"hyperlink-text-nav\" href=\"/films\">Films</a></li>\r\n\t\t\t<li><a class=\"hyperlink-text-nav\" href=\"/categories\">Categories</a></li>\r\n\t\t\t<li style=\"float:right\">\r\n\t\t\t<span sec:authorize=\"isAuthenticated()\">\r\n\t\t\t\t<span sec:authentication=\"name\"></span>\r\n\t\t\t\t<span sec:authentication=\"principal.authorities\"></span>\r\n                    <a th:href=\"@{/owner}\">Owner Page</a>\r\n\t\t\t</span>\r\n\t\t\t</li>\r\n\t\t\t<li style=\"float:right\">\r\n\t\t\t<span sec:authorize=\"isAuthenticated()\">\r\n\t\t\t\t<span sec:authentication=\"name\"></span>\r\n\t\t\t\t<span sec:authentication=\"principal.authorities\"></span>\r\n                    <a th:href=\"@{/customer}\">Customer Page</a>\r\n                </span>\r\n\t\t\t</li>\r\n\t\t\t<li style=\"float:right\"><a href=\"/login\">Login</a></li>\r\n\t\t</ul>\r\n\t\t<br/>\r\n\t\t<br/>\r\n\t\t<br/>\r\n\t</div>\r\n\r\n\r\n</body>\r\n\r\n</html>"
+  },
+  {
+    "id": 151,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\home.html",
+    "content": "<!DOCTYPE html>\r\n<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n\t  xmlns:th=\"http://www.thymeleaf.org\"\r\n\t  layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n<title>Layout</title>\r\n</head>\r\n\r\n<body>\r\n\r\n<!--\t<div layout:fragment=\"navigation\">-->\r\n<!--\t\t<div th:replace=\"fragments/navigation :: navigation\"></div>-->\r\n<!--\t</div>-->\r\n\r\n\t<div layout:fragment=\"content\">\r\n\t\t<div class=\"jumbotron\">\r\n\t\t\t<h1 class=\"display-4\" style=\"text-align: center\">Hello, welcome to the Dependables Film Store!</h1>\r\n\t\t\t<hr class=\"my-4\">\r\n\r\n\t\t\t<img th:src=\"@{/images/camera.jpg}\" class=\"img-fluid\" alt=\"Responsive image\"/>\r\n\t\t\t<div class=\"lead \" data-block-type=\"2\" id=\"block-yui_3_17_2_1_1546889297962_1611116\">\r\n\t\t\t\t<div class=\"sqs-block-content\">\r\n\t\t\t\t\t<p class=\"\" style=\"white-space:pre-wrap;\"><br><br></p><h3 style=\"white-space:pre-wrap;\">\u201cWe don\u2019t make movies to make more money. We make money to make more movies.\u201d</h3>\r\n\t\t\t\t\t<p class=\"\" style=\"white-space:pre-wrap;\">- Walt Disney</p>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<hr class=\"my-4\">\r\n\t\t\t<p>We bring all your favourite films in one place. Go look now!</p>\r\n\t\t\t<p class=\"lead\">\r\n\t\t\t\t<a class=\"button\" href=\"/films\" role=\"button\">Explore films</a>\r\n\t\t\t</p>\r\n\t\t</div>\r\n\t</div>\r\n\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 152,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 153,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n  xmlns:th=\"http://www.thymeleaf.org\"\r\n  layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n<title>Layout</title>\r\n<link href=\"static/css/style.css\" rel=\"stylesheet\">\r\n</head>"
+  },
+  {
+    "id": 154,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<body>"
+  },
+  {
+    "id": 155,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<div layout:fragment=\"content\" id = cf>"
+  },
+  {
+    "id": 156,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<div class=\"css-slideshow\">\r\n        <figure>\r\n            <img src= \"https://m.media-amazon.com/images/M/MV5BOWFlNzZhYmYtYTI5YS00MDQyLWIyNTUtNTRjMWUwNTEzNjA0XkEyXkFqcGdeQXVyNjUwNzk3NDc@._V1_.jpg\" alt=\"class-header-3d\" width=\"900\" height=\"582\" class=\"alignnone size-large wp-image-174\" />\r\n            <figcaption><strong>Cool Hand Luke </strong> A laid back Southern man is sentenced to two years in a rural prison, but refuses to conform.\r\n                Director: Stuart Rosenberg\r\n                Writers: Donn Pearce (screenplay), Frank Pierson (screenplay) (as Frank R. Pierson) \u00bb\r\n                Stars: Paul Newman\r\n            </figcaption>\r\n        </figure>\r\n\r\n        <figure>\r\n        <img src=\"https://hnmag.ca/wp-content/uploads/2019/04/casino.png\" alt=\"class-header-semantics\" width=\"1080\" height=\"582\" class=\"alignnone size-full wp-image-179\" />\r\n            <figcaption><strong>Casino:</strong>\r\n                A tale of greed, deception, money, power, and murder occur between two best friends: a mafia enforcer and a casino executive compete against each other over a gambling empire, and over a fast living and fast loving socialite.\r\n                Director: Martin Scorsese\r\n                Writers: Nicholas Pileggi (book), Nicholas Pileggi (screenplay)  \u00bb\r\n                Stars: Robert De Niro, Sharon Stone, Joe Pesci\r\n            </figcaption>\r\n        </figure>"
+  },
+  {
+    "id": 157,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<figure>\r\n            <img src=\"https://images-na.ssl-images-amazon.com/images/I/81K5UtX3PdL._AC_SY679_.jpg\" alt=\"class-header-offline\" width=\"1080\" height=\"582\" class=\"alignnone size-large wp-image-178\" />\r\n            <figcaption><strong>Scarface:</strong>\r\n                In 1980 Miami, a determined Cuban immigrant takes over a drug cartel and succumbs to greed.\r\n                Director: Brian De Palma\r\n                Writer: Oliver Stone (screenplay by)\r\n                Stars: Al Pacino, Michelle Pfeiffer, Steven Bauer.\r\n            </figcaption>\r\n        </figure>\r\n\r\n        <figure>\r\n            <img src=\"https://vistapointe.net/images/the-lord-of-the-rings-the-two-towers-1.jpg\" alt=\"class-header-multimedia\" width=\"1080\" height=\"582\"class=\"alignnone size-large wp-image-175\" />\r\n            <figcaption><strong>The Lord Of The Rings The Two Towers:</strong>\r\n                While Frodo and Sam edge closer to Mordor with the help of the shifty Gollum, the divided fellowship makes a stand against Sauron's new ally, Saruman, and his hordes of Isengard.\r\n                Director: Peter Jackson\r\n                Writers: J.R.R. Tolkien (novel), Fran Walsh (screenplay)  \u00bb\r\n                Stars: Elijah Wood, Ian McKellen, Viggo Mortensen\r\n            </figcaption>\r\n        </figure>"
+  },
+  {
+    "id": 158,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<figure>\r\n            <img src=\"https://4.bp.blogspot.com/_wGl3bmdTX_E/TTY_XiMkV5I/AAAAAAAAAoI/ATbhtc_3G0c/s1600/Movies.jpg\" width=\"1080\" height=\"582\" class=\"alignnone size-large wp-image-176\" />\r\n            <figcaption><strong>The Social Network:</strong>\r\n                As Harvard student Mark Zuckerberg creates the social networking site that would become known as Facebook, he is sued by the twins who claimed he stole their idea, and by the co-founder who was later squeezed out of the business.\r\n                Director: David Fincher\r\n                Writers: Aaron Sorkin (screenplay), Ben Mezrich (book)\r\n                Stars: Jesse Eisenberg, Andrew Garfield, Justin Timberlake\r\n            </figcaption>\r\n        </figure>\r\n\r\n        <figure>\r\n            <img src=\"https://www.hitc.com/static/uploads/hitcn/148/the_wolf_of_wall_street_poster_1_44725.jpg\" alt=\"class-header-device\" width=\"1080\" height=\"582\" class=\"alignnone size-full wp-image-177\" />\r\n            <figcaption><strong>Wolf Of Wall Street</strong>\r\n                Based on the true story of Jordan Belfort, from his rise to a wealthy stock-broker living the high life to his fall involving crime, corruption and the federal government.\r\n                Director: Martin Scorsese\r\n                Writers: Terence Winter (screenplay), Jordan Belfort (book)\r\n                Stars: Leonardo DiCaprio, Jonah Hill, Margot Robbie\r\n            </figcaption>\r\n        </figure>"
+  },
+  {
+    "id": 159,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "<figure>\r\n            <img src=\"https://www.atthemovies.co.uk/components/com_cyaxshop/osx/image/data/upload/Goodfellas1990usINTL27x40in325u.jpg\" alt=\"class-header-css3\" width=\"1080\" height=\"582\" class=\"alignnone size-full wp-image-172\" />\r\n            <figcaption><strong>Goodfellas:</strong>\r\n                The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito in the Italian-American crime syndicate.\r\n                Director: Martin Scorsese\r\n                Writers: Nicholas Pileggi (book), Nicholas Pileggi (screenplay) \u00bb\r\n                Stars: Robert De Niro, Ray Liotta, Joe Pesci |\r\n            </figcaption>\r\n        </figure>\r\n\r\n        <figure>\r\n            <img src=\"https://cdn.shopify.com/s/files/1/0969/9128/products/TheDeparted-LeonardoDiCaprioJackNicholson-MartinScorseseHollywoodEnglishMoviePoster_c10f33a9-f625-441a-bb73-334e9ef5dc99.jpg?v=1600761999\" alt=\"class-header-performance\" width=\"1080\" height=\"582\" class=\"alignnone size-large wp-image-173\" />\r\n            <figcaption><strong>The Departed:</strong>\r\n                An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.\r\n                Director: Martin Scorsese\r\n                Writers: William Monahan (screenplay), Alan Mak \u00bb\r\n                Stars: Leonardo DiCaprio, Matt Damon, Jack Nicholson\r\n            </figcaption>\r\n        </figure>"
+  },
+  {
+    "id": 160,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "</div>\r\n\r\n<"
+  },
+  {
+    "id": 161,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "/div>\r\n\r\n<"
+  },
+  {
+    "id": 162,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "/body>\r\n\r\n<"
+  },
+  {
+    "id": 163,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\landing.html",
+    "content": "/html>"
+  },
+  {
+    "id": 164,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\layout\\layout.html",
+    "content": "<!DOCTYPE html>\r\n\r\n<html lang=\"en\" xmlns:th=\"http://www.thymeleaf.org\" xmlns:layout=\"http://www.ultraq.net.nz/web/thymeleaf/layout\">\r\n\r\n<head th:replace=\"fragments/header :: header\">\r\n\t<title>Layout</title>\r\n</head>\r\n\r\n<body>\r\n\r\n\t<div th:replace=\"fragments/navigation :: navigation\"></div>\r\n\r\n\t<div class=\"container\" id=\"mainContent\">\r\n\t\t<div class=\"row\" style=\"place-content: center\">\r\n\t\t\t<div class=\"center w-100\">\r\n\t\t\t\t<div layout:fragment=\"content\" style=\"margin-bottom: 30px\"></div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\r\n\t<div th:replace=\"fragments/footer :: footer\"></div>\r\n\r\n</body>\r\n\r\n\r\n</html>"
+  },
+  {
+    "id": 165,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\login.html",
+    "content": "<!DOCTYPE html>\r\n<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n\t  xmlns:th=\"http://www.thymeleaf.org\"\r\n\t  layout:decorator=\"layout/layout\" lang=\"en\">\r\n\r\n<head>\r\n\t<title>Login</title>\r\n</head>\r\n\r\n<body>\r\n\t<div layout:fragment=\"content\">\r\n\t\t<div class=\"row\">\r\n\t\t\t<div class=\"col-md-6\">\r\n\t\t\t\t<h1>Login page</h1>\r\n\r\n\t\t\t\t<p>Please enter your credentials</p>\r\n\r\n\t\t\t\t<div th:if=\"${param.error}\">\r\n\t\t\t\t\tInvalid username and password.\r\n\t\t\t\t</div>\r\n\t\t\t\t<div th:if=\"${param.logout}\">\r\n\t\t\t\t\tYou have been logged out.\r\n\t\t\t\t</div>\r\n\t\t\t\t<form th:action=\"@{/login}\" method=\"post\">\r\n\t\t\t\t\t<div class=\"form-group\">\r\n\t\t\t\t\t\t<label for=\"username\">Username</label>\r\n\t\t\t\t\t\t<input type=\"text\" id=\"username\" name=\"username\" autofocus=\"autofocus\" placeholder=\"Username\"/>\r\n\t\t\t\t\t\t<label for=\"password\">Password</label>\r\n\t\t\t\t\t\t<input type=\"password\" id=\"password\" name=\"password\" placeholder=\"Password\" />\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"form-group\">\r\n\t\t\t\t\t\t<div class=\"row\">\r\n\t\t\t\t\t\t\t<div  class=\"col-sm-12\">\r\n\t\t\t\t\t\t\t\t<input href=\"/hello\" type=\"submit\" name=\"login-submit\" id=\"login-submit\" class=\"button\" value=\"Login\"/>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</form>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 166,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customerDetails.html",
+    "content": "<!DOCTYPE html>\r\n<html lang=\"en\" xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"https://www.thymeleaf.org\"\r\n      xmlns:sec=\"https://www.thymeleaf.org/thymeleaf-extras-springsecurity3\"\r\n      layout:decorator=\"layout/layout\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Title</title>\r\n</head>\r\n<body>\r\n\r\n<div layout:fragment=\"content\">\r\n\r\n    <h1 style=\"text-align: center\" th:text=\"${customer != null} ? ${'Rental History for ' + (customer.firstName.concat(' ' + customer.lastName).toUpperCase())} : 'Customer Rental History'\">CUSTOMER</h1>\r\n    <br/><br/>\r\n    <form class=\"form-group\" name=\"orders\">\r\n        <table>\r\n            <tr>\r\n                <th>Film Title</th>\r\n                <th>Rental Date</th>\r\n                <th>Return Date</th>\r\n            </tr>\r\n            <tr th:each=\"order: ${history}\">\r\n                <td><a class=\"hyperlink-text\" th:href=\"@{/films/details(id=${order.film.filmId})}\"  th:text=\"${order.film.title}\">Film</a></td>\r\n                <td th:text=\"${order.rental.rentalDate}\"></td>\r\n                <td th:text=\"${order.rental.returnDate}\"></td>\r\n            </tr>\r\n        </table>\r\n    </form>\r\n\r\n</div>\r\n\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 167,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 168,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "<html lang=\"en\" xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"https://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Title</title>\r\n</head>"
+  },
+  {
+    "id": 169,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "<body>"
+  },
+  {
+    "id": 170,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "<div layout:fragment=\"content\">"
+  },
+  {
+    "id": 171,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "<div align=\"center\">\r\n        <h1>Customers Overview</h1>\r\n        <br/><br/>\r\n\r\n\r\n        <form class=\"filter\" action=\"/owner/customers\">\r\n            <table class=\"filter-table\">\r\n                <tr>\r\n                    <td class=\"no-border\">\r\n                        <label>\r\n                            First Name:\r\n                            <select name=\"firstName\" class=\"selection-menu\">\r\n                                <option>ALL CUSTOMERS</option>\r\n                                <option th:each=\"customer: ${allCustomers}\" th:text=\"${customer.firstName}\">\r\n                            </select>\r\n\r\n                            Last Name:\r\n                            <select name=\"lastName\" class=\"selection-menu\">\r\n                                <option>ALL CUSTOMERS</option>\r\n                                <option th:each=\"customer: ${allCustomers}\" th:text=\"${customer.lastName}\">\r\n                            </select>\r\n                        </label>\r\n                    </td>\r\n                    <td class=\"no-border\">\r\n                        <input type=\"submit\" value=\"Search\" class=\"button\">\r\n                    </td>\r\n                </tr>\r\n            </table>\r\n        </form>"
+  },
+  {
+    "id": 172,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "<table border=\"1\" cellpadding=\"10\">\r\n            <thead>\r\n                <tr>\r\n                    <th>Customer ID</th>\r\n                    <th>First name</th>\r\n                    <th>Last Name</th>\r\n                    <th>Email</th>\r\n                    <th>Active</th>\r\n                    <th>Registration Date</th>\r\n                    <th>Last Update</th>\r\n                    <th>History</th>\r\n                </tr>\r\n            </thead>\r\n            <tbody>\r\n            <tr th:each=\"customer : ${customers}\">\r\n                <td th:text=\"${customer.customerId}\">Customer ID</td>\r\n                <td th:text=\"${customer.firstName}\">First Name</td>\r\n                <td th:text=\"${customer.lastName}\">Last Name</td>\r\n                <td th:text=\"${customer.email}\">Email</td>\r\n                <td th:text=\"${customer.active == 1} ? 'Yes' : 'No'\">Active</td>\r\n                <td th:text=\"${customer.createDate}\">Registration Date</td>\r\n                <td th:text=\"${customer.lastUpdate}\">Last Update</td>\r\n                <td>\r\n                    <a th:href=\"@{'/owner/view/customers/' + ${customer.customerId}}\">Details</a>\r\n                </td>\r\n            </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>"
+  },
+  {
+    "id": 173,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "</div>"
+  },
+  {
+    "id": 174,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "</body>"
+  },
+  {
+    "id": 175,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\customers.html",
+    "content": "</html>"
+  },
+  {
+    "id": 176,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\edit-film.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 177,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\edit-film.html",
+    "content": "<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n\t  xmlns:th=\"http://www.thymeleaf.org\"\r\n\t  layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n<title>Layout</title>\r\n</head>"
+  },
+  {
+    "id": 178,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\edit-film.html",
+    "content": "<body>\r\n\r\n\t<div layout:fragment=\"content\">\r\n\t\t<div align=\"center\">\r\n\t\t\t<h1>Edit Film</h1>\r\n\t\t\t<br />\r\n\t\t\t<form action=\"#\" th:action=\"@{/save}\" th:object=\"${film}\"\r\n\t\t\t\t  method=\"post\">\r\n\r\n\t\t\t\t<table border=\"0\" cellpadding=\"10\">\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Film ID:</td>\r\n\t\t\t\t\t\t<td>\r\n\t\t\t\t\t\t\t<input type=\"text\" th:field=\"*{filmId}\" readonly=\"readonly\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Film Tittle:</td>\r\n\t\t\t\t\t\t<td>\r\n\t\t\t\t\t\t\t<input type=\"text\" th:field=\"*{title}\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Description:</td>\r\n\t\t\t\t\t\t<td><input type=\"text\" th:field=\"*{description}\" /></td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Release Year:</td>\r\n\t\t\t\t\t\t<td><input type=\"text\" th:field=\"*{releaseYear}\" /></td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Rental Duration:</td>\r\n\t\t\t\t\t\t<td><input type=\"text\" th:field=\"*{rentalDuration}\" /></td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Price:</td>\r\n\t\t\t\t\t\t<td><input type=\"text\" th:field=\"*{rentalRate}\" /></td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Rating:</td>\r\n\t\t\t\t\t\t<td><input type=\"text\" th:field=\"*{rating}\" /></td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Length:</td>\r\n\t\t\t\t\t\t<td><input type=\"text\" th:field=\"*{length}\" /></td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td>Replacement Cost:</td>\r\n\t\t\t\t\t\t<td><input type=\"text\" th:field=\"*{replacementCost}\" /></td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td colspan=\"2\"><button class=\"button w-100\" type=\"submit\">Save</button> </td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t</form>\r\n\t\t</div>\r\n\t</div>\r\n</body>\r\n</html>"
+  },
+  {
+    "id": 179,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\films.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 180,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\films.html",
+    "content": "<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"http://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n    <title>Layout</title>\r\n</head>"
+  },
+  {
+    "id": 181,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\films.html",
+    "content": "<body>\r\n\r\n<div layout:fragment=\"content\">\r\n    <div align=\"center\">\r\n        <h1>Films Overview</h1>\r\n        <br/><br/>\r\n        <table border=\"1\" cellpadding=\"10\">\r\n            <thead>\r\n            <tr>\r\n                <th>Film ID</th>\r\n                <th>Title</th>\r\n                <th>Description</th>\r\n                <th>Release Year</th>\r\n                <th>Rental Duration</th>\r\n                <th>Price</th>\r\n                <th>Rating</th>\r\n                <th>Length</th>\r\n                <th>Replacement Cost</th>\r\n                <th>Available</th>\r\n            </tr>\r\n            </thead>\r\n            <tbody>\r\n            <tr th:each=\"film : ${films}\">\r\n                <td th:text=\"${film.filmId}\">Film ID</td>\r\n                <td><a class=\"hyperlink-text\" th:href=\"@{/films/details(id=${film.filmId})}\"  th:text=\"${film.title}\">Film</a></td>\r\n                <td th:text=\"${film.description}\">Description</td>\r\n                <td th:text=\"${film.releaseYear}\">Release Year</td>\r\n                <td th:text=\"${film.rentalDuration}\">Rental Duration</td>\r\n                <td th:text=\"${film.rentalRate}\">Price</td>\r\n                <td th:text=\"${film.rating}\">Rating</td>\r\n                <td th:text=\"${film.length}\">Length</td>\r\n                <td th:text=\"${film.replacementCost}\">Replacement Cost</td>\r\n                <td th:text=\"${filmCount.get(film.filmId)}\">Availability</td>\r\n            </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>\r\n</div>\r\n\r\n</body>"
+  },
+  {
+    "id": 182,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\films.html",
+    "content": "</html>"
+  },
+  {
+    "id": 183,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 184,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "<html xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n\t  xmlns:th=\"http://www.thymeleaf.org\"\r\n\t  layout:decorator=\"layout/layout\">\r\n\r\n<head>\r\n<title>Layout</title>\r\n</head>"
+  },
+  {
+    "id": 185,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "<body>"
+  },
+  {
+    "id": 186,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "<div layout:fragment=\"content\">"
+  },
+  {
+    "id": 187,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "<div align=\"center\">\r\n\t\t\t<h1>Manage Films</h1>\r\n\t\t\t<br/><br/>\r\n\r\n\r\n\t\t\t<form class=\"filter\" action=\"/owner/manage-films\">\r\n\t\t\t\t<table>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td class=\"no-border\">\r\n\t\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t\t<select name=\"title\" class=\"selection-menu\">\r\n\t\t\t\t\t\t\t\t\t<option>ALL FILMS</option>\r\n\t\t\t\t\t\t\t\t\t<option th:each=\"film: ${allFilms}\" th:text=\"${film.title}\">\r\n\t\t\t\t\t\t\t\t</select>\r\n\t\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"no-border\">\r\n\t\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" class=\"button\">\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t</form>"
+  },
+  {
+    "id": 188,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "<table border=\"1\" cellpadding=\"10\">\r\n\t\t\t\t<thead>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<th>Film ID</th>\r\n\t\t\t\t\t<th>Title</th>\r\n\t\t\t\t\t<th>Description</th>\r\n\t\t\t\t\t<th>Release Year</th>\r\n\t\t\t\t\t<th>Rental Duration</th>\r\n\t\t\t\t\t<th>Price</th>\r\n\t\t\t\t\t<th>Rating</th>\r\n\t\t\t\t\t<th>Length</th>\r\n\t\t\t\t\t<th>Replacement Cost</th>\r\n\t\t\t\t\t<th>Available</th>\r\n\t\t\t\t\t<th>Action</th>\r\n\t\t\t\t</tr>\r\n\t\t\t\t</thead>\r\n\t\t\t\t<tbody>\r\n\t\t\t\t<tr th:each=\"film : ${films}\">\r\n\t\t\t\t\t<td th:text=\"${film.filmId}\">Film ID</td>\r\n\t\t\t\t\t<td><a class=\"hyperlink-text\" th:href=\"@{/films/details(id=${film.filmId})}\" th:text=\"${film.title}\">Film</a></td>\r\n\t\t\t\t\t<td th:text=\"${film.description}\">Description</td>\r\n\t\t\t\t\t<td th:text=\"${film.releaseYear}\">Release Year</td>\r\n\t\t\t\t\t<td th:text=\"${film.rentalDuration}\">Rental Duration</td>\r\n\t\t\t\t\t<td th:text=\"${film.rentalRate}\">Price</td>\r\n\t\t\t\t\t<td th:text=\"${film.rating}\">Rating</td>\r\n\t\t\t\t\t<td th:text=\"${film.length}\">Length</td>\r\n\t\t\t\t\t<td th:text=\"${film.replacementCost}\">Replacement Cost</td>\r\n\t\t\t\t\t<td th:text=\"${filmCount.get(film.filmId)}\">Availability</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<a th:href=\"@{'/edit/' + ${film.filmId}}\">Edit</a>\r\n\t\t\t\t\t\t&nbsp;&nbsp;&nbsp;\r\n\t\t\t\t\t\t<a th:href=\"@{'/delete/' + ${film.filmId}}\">Delete</a>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t</tbody>\r\n\t\t\t</table>\r\n\t\t</div>"
+  },
+  {
+    "id": 189,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "</div>"
+  },
+  {
+    "id": 190,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "</body>"
+  },
+  {
+    "id": 191,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\manage-films.html",
+    "content": "</html>"
+  },
+  {
+    "id": 192,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "content": "<!DOCTYPE html>"
+  },
+  {
+    "id": 193,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "content": "<html lang=\"en\" xmlns:layout=\"http://www.ultraq.net.nz/thymeleaf/layout\"\r\n      xmlns:th=\"https://www.thymeleaf.org\"\r\n      layout:decorator=\"layout/layout\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Title</title>\r\n</head>"
+  },
+  {
+    "id": 194,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "content": "<body>"
+  },
+  {
+    "id": 195,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "content": "<div layout:fragment=\"content\">\r\n\r\n        <div class=\"row\">\r\n            <div class=\"col-sm-8\">\r\n                <h1 th:text=\"${staff != null} ? ${'Hello, ' + (staff.firstName.concat(' ' + staff.lastName).toUpperCase())} : 'Hello, Admin'\">Welcome back, CUSTOMER </h1>\r\n            </div>\r\n            <div class=\"col-sm-4\">\r\n                <form th:action=\"@{/logout}\" method=\"post\">\r\n                    <input class=\"button\" type=\"submit\" value=\"Sign Out\"/>\r\n                </form>\r\n            </div>\r\n        </div>\r\n\r\n        <table class=\"table\">\r\n            <tr>\r\n                <th>First Name:</th>\r\n                <td th:text=\"${staff != null} ? ${staff.firstName} : 'N/A'\"></td>\r\n            </tr>\r\n            <tr>\r\n                <th>Last Name:</th>\r\n                <td th:text=\"${staff != null} ? ${staff.lastName} : 'N/A'\"></td>\r\n            </tr>\r\n            <tr>\r\n                <th>Email:</th>\r\n                <td th:text=\"${staff != null} ? ${staff.email} : 'N/A'\"></td>\r\n            </tr>\r\n            <tr>\r\n                <th>Staff ID:</th>\r\n                <td th:text=\"${staff != null} ? ${staff.staffId} : 'N/A'\"></td>\r\n            </tr>\r\n        </table>"
+  },
+  {
+    "id": 196,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "content": "<table class=\"table\">\r\n            <tr>\r\n                <th style=\"text-align: center\">Admin Actions</th>\r\n            </tr>\r\n            <tr>\r\n                <td><a class=\"hyperlink-text\" href=\"/owner/customers\">View All Customers</a></td>\r\n            </tr>\r\n            <tr>\r\n                <td><a class=\"hyperlink-text\" href=\"owner/manage-films\">View All Films</a></td>\r\n            </tr>\r\n        </table>\r\n\r\n        <table>\r\n            <tr>\r\n                <th>Available Films</th>\r\n                <td>\r\n                    <a class=\"hyperlink-text\" th:href=\"@{/films}\" th:text=\"${inventory}\">Details</a>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>Total Customers</th>\r\n                <td>\r\n                    <a class=\"hyperlink-text\" th:href=\"@{/owner/customers}\" th:text=\"${customers}\">Details</a>\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>"
+  },
+  {
+    "id": 197,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "content": "</body>"
+  },
+  {
+    "id": 198,
+    "source": "SakilaProject\\src\\main\\resources\\templates\\owner\\owner.html",
+    "content": "</html>"
+  },
+  {
+    "id": 199,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "package com.sparta.engineering72.sakilaproject;\r\nimport com.sparta.engineering72.sakilaproject.controller.ActorController;\r\nimport com.sparta.engineering72.sakilaproject.controller.CategoryController;\r\nimport com.sparta.engineering72.sakilaproject.controller.CustomerController;\r\nimport com.sparta.engineering72.sakilaproject.controller.FilmController;\r\nimport com.sparta.engineering72.sakilaproject.entities.*;\r\nimport com.sparta.engineering72.sakilaproject.respositories.*;\r\nimport com.sparta.engineering72.sakilaproject.services.*;\r\nimport org.junit.Before;\r\nimport org.junit.Test;\r\nimport org.junit.runner.RunWith;\r\nimport org.mockito.InjectMocks;\r\nimport org.mockito.MockitoAnnotations;\r\nimport org.mockito.Spy;\r\nimport org.mockito.junit.MockitoJUnitRunner;\r\n\r\nimport java.math.BigDecimal;\r\nimport java.sql.Timestamp;\r\nimport java.util.Date;\r\nimport org.springframework.ui.ModelMap;\r\n\r\nimport static org.junit.jupiter.api.Assertions.assertEquals;\r\nimport static org.mockito.Mockito.verify;\r\nimport static org.mockito.Mockito.when;"
+  },
+  {
+    "id": 200,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@RunWith(MockitoJUnitRunner.Silent.class)\r\npublic class MockTests"
+  },
+  {
+    "id": 201,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "{\r\n\r\n\r\n    @Spy\r\n    ActorRepository actorRepository;\r\n    @Spy\r\n    FilmRepository filmRepository;\r\n    @Spy\r\n    CustomerRepository customerRepository;\r\n\r\n    @Spy\r\n    CategoryRepository categoryRepository;\r\n\r\n    @Spy\r\n    StaffRepository staffRepository;\r\n\r\n    @Spy\r\n    RentalRepository rentalRepository;\r\n\r\n    @Spy\r\n    InventoryRepository inventoryRepository;\r\n\r\n    @Spy @InjectMocks\r\n    ActorService actorService;\r\n\r\n    @Spy @InjectMocks\r\n    CategoryService categoryService;\r\n\r\n    @Spy @InjectMocks\r\n    FilmService filmService;\r\n\r\n    @Spy @InjectMocks\r\n    CustomerService customerService;\r\n\r\n    @Spy @InjectMocks\r\n    InventoryService inventoryService;\r\n\r\n    @Spy @InjectMocks\r\n    RentalService rentalService;\r\n\r\n    @InjectMocks\r\n    ActorController actorController;\r\n\r\n    @InjectMocks\r\n    FilmController filmController;\r\n\r\n    @InjectMocks\r\n    CategoryController categoryController;\r\n\r\n    @Before()\r\n    public void init() {\r\n        MockitoAnnotations.initMocks(this);\r\n    }\r\n    @Test\r\n    public void testActorById() {\r\n        Actor actor = new Actor();\r\n        actor.setActorId(10);\r\n        when(actorRepository.getActorByActorId(10)).thenReturn(actor);\r\n        Actor a = actorController.findActorById(10);\r\n        System.out.println(actor.getFirstName());\r\n        assertEquals(10, a.getActorId());\r\n    }"
+  },
+  {
+    "id": 202,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testActorByFirstName() {\r\n        Actor actor1 = new Actor();\r\n        actor1.setFirstName(\"Frank\");\r\n        actor1.setActorId(1);\r\n        when(actorRepository.getActorByActorId(1)).thenReturn((actor1));\r\n        Actor aa = actorController.findActorById(1);\r\n        assertEquals(\"Frank\", aa.getFirstName());\r\n    }\r\n\r\n    @Test\r\n    public void testActorByLastName() {\r\n        Actor actor2 = new Actor();\r\n        actor2.setLastName(\"Gomez\");\r\n        actor2.setActorId(2);\r\n        when(actorRepository.getActorByActorId(2)).thenReturn((actor2));\r\n        Actor aaa = actorController.findActorById(2);\r\n        assertEquals(\"Gomez\", aaa.getLastName());\r\n    }\r\n\r\n    @Test\r\n    public void testActorByMore() {\r\n        Actor actor3 = new Actor();\r\n        actor3.setFirstName(\"Justin\");\r\n        actor3.setActorId(3);\r\n        actor3.setLastName(\"Timberlake\");\r\n        when(actorRepository.getActorByActorId(3)).thenReturn((actor3));\r\n        Actor aaaa = actorController.findActorById(3);\r\n        assertEquals(\"Justin\", aaaa.getFirstName());\r\n        assertEquals(\"Timberlake\", aaaa.getLastName());\r\n    }"
+  },
+  {
+    "id": 203,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testActorByFullName() {\r\n        Timestamp timestamp = new Timestamp(System.currentTimeMillis());\r\n        Actor actor4 = new Actor();\r\n        actor4.setFirstName(\"Leo\");\r\n        actor4.setActorId(3);\r\n        actor4.setLastName(\"DiCaprio\");\r\n        actor4.setLastUpdate(timestamp);\r\n        when(actorRepository.getActorByActorId(3)).thenReturn((actor4));\r\n        Actor aaaa = actorController.findActorById(3);\r\n        assertEquals(timestamp.toString(),aaaa.getLastUpdate().toString());\r\n    }\r\n\r\n    @Test\r\n    public void testFilmByID() {\r\n        FilmActor theFilmActor = new FilmActor();\r\n        Actor filmActor = new Actor();\r\n        theFilmActor.setActorId(filmActor.getActorId());\r\n        Film film = new Film();\r\n        film.setFilmId(1);\r\n        when(filmRepository.getFilmByFilmId(1)).thenReturn((film));\r\n        Film theFilm = filmController.findFilmByID(1);\r\n        assertEquals(1, theFilm.getFilmId());\r\n    }\r\n\r\n    @Test\r\n    public void testFilmByDescritption() {\r\n        Film film = new Film();\r\n        film.setDescription(\"Horror\");\r\n        film.setFilmId(2);\r\n        when(filmRepository.getFilmByFilmId(2)).thenReturn((film));\r\n        Film theFilm = filmController.findFilmByID(2);\r\n        assertEquals(\"Horror\", theFilm.getDescription());\r\n    }"
+  },
+  {
+    "id": 204,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testFilmByRating() {\r\n        Film film = new Film();\r\n        film.setRating(\"18\");\r\n        film.setFilmId(3);\r\n        when(filmRepository.getFilmByFilmId(3)).thenReturn((film));\r\n        Film theFilm = filmController.findFilmByID(3);\r\n        assertEquals(\"18\", theFilm.getRating());\r\n    }\r\n\r\n    @Test\r\n    public void testFilmByLength() {\r\n        Film film = new Film();\r\n        film.setLength(200);\r\n        film.setFilmId(4);\r\n        when(filmRepository.getFilmByFilmId(4)).thenReturn((film));\r\n        Film theFilm = filmController.findFilmByID(4);\r\n        assertEquals(200, theFilm.getLength());\r\n    }\r\n\r\n    @Test\r\n    public void testFilmByName() {\r\n        Film film = new Film();\r\n        film.setTitle(\"Goodfellas\");\r\n        film.setFilmId(5);\r\n        when(filmRepository.getFilmByFilmId(5)).thenReturn((film));\r\n        Film theFilm = filmController.findFilmByID(5);\r\n        assertEquals( \"Goodfellas\" , theFilm.getTitle());\r\n    }\r\n\r\n    @Test\r\n    public void testFilmByDescription() {\r\n        Film film = new Film();\r\n        film.setDescription(\"This is a long description\");\r\n        film.setFilmId(5);\r\n        when(filmRepository.getFilmByFilmId(5)).thenReturn((film));\r\n        Film theFilm = film;\r\n        assertEquals( \"This is a long description\" , theFilm.getDescription());\r\n    }"
+  },
+  {
+    "id": 205,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testFilms() {\r\n        Timestamp timestamp = new Timestamp(System.currentTimeMillis());\r\n        Film film = new Film();\r\n        film.setLastUpdate(timestamp);\r\n        film.setTitle(\"Goodfellas\");\r\n        film.setFilmId(5);\r\n        film.setSpecialFeatures(\"Special\");\r\n        film.setReplacementCost(BigDecimal.valueOf(0.999));\r\n        film.setRentalRate(BigDecimal.valueOf(0.888));\r\n        film.setRentalDuration(10);\r\n        film.setReleaseYear(2000);\r\n        when(filmRepository.getFilmByFilmId(5)).thenReturn((film));\r\n        Film theFilm = film;\r\n        assertEquals( timestamp.toString() , theFilm.getLastUpdate().toString());\r\n        assertEquals(  10, theFilm.getRentalDuration());\r\n        assertEquals(  BigDecimal.valueOf(0.999), theFilm.getReplacementCost());\r\n        assertEquals(  BigDecimal.valueOf(0.888), theFilm.getRentalRate());\r\n        assertEquals(  2000, theFilm.getReleaseYear());\r\n    }\r\n\r\n    @Test\r\n    public void testCategoryById() {\r\n        Category category = new Category();\r\n        category.setCategoryId(10);\r\n        when(categoryRepository.getCategoryByCategoryId(10)).thenReturn((category));\r\n        Category secondCategory = categoryController.getCategoryById(10);\r\n        assertEquals( 10 , secondCategory.getCategoryId());\r\n    }"
+  },
+  {
+    "id": 206,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testCategoryByName() {\r\n        Category category = new Category();\r\n        category.setName(\"Category\");\r\n        category.setCategoryId(10);\r\n        when(categoryRepository.getCategoryByCategoryId(10)).thenReturn((category));\r\n        Category secondCategory = category;\r\n        assertEquals( 10 , secondCategory.getCategoryId());\r\n    }\r\n\r\n    @Test\r\n    public void testCustomerById() {\r\n        Customer customer = new Customer();\r\n        customer.setCustomerId(10);\r\n        when(customerRepository.getCustomerByCustomerId(10)).thenReturn((customer));\r\n        Customer secondCustomer = customer;\r\n        assertEquals( 10 , secondCustomer.getCustomerId());\r\n    }\r\n\r\n    @Test\r\n    public void testCustomer() {\r\n        Date date = new Date();\r\n        Customer customer = new Customer();\r\n        customer.setEmail(\"email\");\r\n        customer.setCustomerId(10);\r\n        customer.setCreateDate(new Timestamp(date.getTime()));\r\n        customer.setFirstName(\"Paul\");\r\n        customer.setLastName(\"Watson\");\r\n        when(customerRepository.getCustomerByCustomerId(10)).thenReturn((customer));\r\n        Customer secondCustomer = customer;\r\n        assertEquals( 10 , secondCustomer.getCustomerId());\r\n        assertEquals( \"email\" , secondCustomer.getEmail());\r\n        assertEquals( date , secondCustomer.getCreateDate());\r\n        assertEquals( \"Paul\" , secondCustomer.getFirstName());\r\n        assertEquals( \"Watson\" , secondCustomer.getLastName());\r\n\r\n    }"
+  },
+  {
+    "id": 207,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testStaff() {\r\n        Timestamp timestamp = new Timestamp(System.currentTimeMillis());\r\n\r\n        Staff staff = new Staff();\r\n        staff.setEmail(\"email\");\r\n        staff.setStaffId(10);\r\n        staff.setFirstName(\"Paul\");\r\n        staff.setLastName(\"Watson\");\r\n        staff.setLastUpdate(timestamp);\r\n        staff.setPassword(\"Password\");\r\n        staff.setUsername(\"Username\");\r\n        when(staffRepository.getStaffByUsername(\"Username\")).thenReturn((staff));\r\n        Staff secondStaff = staff;\r\n        assertEquals( 10 , secondStaff.getStaffId());\r\n        assertEquals( \"email\" , secondStaff.getEmail());\r\n        assertEquals( \"Paul\" , secondStaff.getFirstName());\r\n        assertEquals( \"Watson\" , secondStaff.getLastName());\r\n        assertEquals( timestamp.toString(), secondStaff.getLastUpdate().toString());\r\n        assertEquals( \"Password\" , secondStaff.getPassword());\r\n        assertEquals( \"Username\" , secondStaff.getUsername());\r\n\r\n    }\r\n\r\n    @Test\r\n    public void testFilmController() {\r\n        ModelMap modelMap = new ModelMap();\r\n        FilmController filmController = new FilmController(filmService, inventoryService, rentalService, customerService);\r\n        String result = filmController.getFilmDetails(modelMap , 10);\r\n        assertEquals( result , \"films/filmDetails\");\r\n    }"
+  },
+  {
+    "id": 208,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testFilmController2() {\r\n        ModelMap modelMap = new ModelMap();\r\n        FilmController filmController = new FilmController(filmService, inventoryService, rentalService, customerService);\r\n        String result = filmController.getFilms(modelMap , \"Filter\");\r\n        assertEquals( result ,  \"/films/films\");\r\n    }\r\n\r\n    @Test\r\n    public void testCategory() {\r\n        ModelMap modelMap = new ModelMap();\r\n        CategoryController categoryController = new CategoryController(filmService, categoryService);\r\n        String result = categoryController.getCategoryDetails(modelMap , 10);\r\n        assertEquals( result ,  \"categories/categoryDetails\");\r\n    }\r\n\r\n    @Test\r\n    public void testCategory2() {\r\n        ModelMap modelMap = new ModelMap();\r\n        CategoryController categoryController = new CategoryController(filmService, categoryService);\r\n        String result = categoryController.getCategories(modelMap);\r\n        assertEquals( result,  \"/categories/categories\");\r\n    }\r\n\r\n    @Test\r\n    public void testActorController1() {\r\n        ModelMap modelMap = new ModelMap();\r\n        ActorController actorController = new ActorController(filmService, actorService);\r\n        String result = actorController.getActors(modelMap , \"FirstName\" , \"LastName\");\r\n        assertEquals( result,   \"actors/actors\");\r\n    }"
+  },
+  {
+    "id": 209,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testCustomerController() {\r\n        ModelMap modelMap = new ModelMap();\r\n        CustomerController customerController = new CustomerController(customerService, rentalService, inventoryService, filmService);\r\n        String result = customerController.getCustomers(modelMap, \"ALL CUSTOMERS\", \"ALL CUSTOMERS\");\r\n        assertEquals( result,   \"owner/customers\");\r\n\r\n    }\r\n\r\n    @Test\r\n    public void testCustomerController2() {\r\n        ModelMap modelMap = new ModelMap();\r\n        CustomerController customerController = new CustomerController(customerService, rentalService, inventoryService, filmService);\r\n        String result = customerController.showUsersRentalHistory(modelMap , 10);\r\n        assertEquals( result,   \"owner/customerDetails\");\r\n    }"
+  },
+  {
+    "id": 210,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testInventory() {\r\n        Date date = new Date(System.currentTimeMillis());\r\n        Timestamp timestamp = new Timestamp(date.getTime());\r\n        Timestamp timestamp1 = new Timestamp(timestamp.getTime());\r\n        Film film = new Film();\r\n        film.setReleaseYear(2000);\r\n        film.setLastUpdate(timestamp);\r\n        Inventory inventory = new Inventory();\r\n        inventory.setFilmId(film.getFilmId());\r\n        inventory.setInventoryId(10);\r\n        inventory.setLastUpdate(timestamp1);\r\n        when(inventoryRepository.getInventoriesByInventoryId(10)).thenReturn((inventory));\r\n        Inventory secondInventory = inventory;\r\n        assertEquals( 10 , secondInventory.getInventoryId());\r\n        assertEquals( timestamp.toString() , secondInventory.getLastUpdate().toString());\r\n        assertEquals( timestamp1.toString() , secondInventory.getLastUpdate().toString());\r\n        System.out.println(date.toString());\r\n    }"
+  },
+  {
+    "id": 211,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testRental() {\r\n        Timestamp timestamp = new Timestamp(System.currentTimeMillis());\r\n        Inventory inventory = new Inventory();\r\n        Customer customer = new Customer();\r\n        customer.setFirstName(\"James\");\r\n        customer.setLastName(\"Peak\");\r\n        Staff staff = new Staff();\r\n        staff.setFirstName(\"Paul\");\r\n        staff.setLastName(\"Watson\");\r\n        Rental rental = new Rental();\r\n        rental.setRentalId(10);\r\n        rental.setReturnDate(timestamp);\r\n        rental.setRentalDate(timestamp);\r\n        rental.setInventoryId(inventory.getInventoryId());\r\n        rental.setCustomerId(customer.getCustomerId());\r\n        rental.setLastUpdate(timestamp);\r\n        rental.setStaffId(staff.getStaffId());\r\n\r\n        when(rentalRepository.getRentalByRentalId(10)).thenReturn((rental));\r\n        Rental secondRental = rental;\r\n        assertEquals( 10 , secondRental.getRentalId());\r\n        assertEquals( inventory.getInventoryId() , secondRental.getInventoryId());\r\n        assertEquals( timestamp.toString() , secondRental.getLastUpdate().toString());\r\n        assertEquals( customer.getCustomerId(), secondRental.getCustomerId());\r\n        assertEquals( staff.getStaffId(), secondRental.getStaffId());\r\n        assertEquals( timestamp.toString(), secondRental.getReturnDate().toString());\r\n        assertEquals( timestamp.toString(), secondRental.getRentalDate().toString());\r\n\r\n    }"
+  },
+  {
+    "id": 212,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\MockTests.java",
+    "content": "@Test\r\n    public void testCategoryByTimeStamp() {\r\n        Timestamp timestamp = new Timestamp(System.currentTimeMillis());\r\n        Category category = new Category();\r\n        category.setLastUpdate(timestamp);\r\n        category.setCategoryId(10);\r\n        when(categoryRepository.getCategoryByCategoryId(10)).thenReturn((category));\r\n        Category secondCategory = category;\r\n        assertEquals( timestamp.toString() , secondCategory.getLastUpdate().toString());\r\n    }\r\n\r\n}"
+  },
+  {
+    "id": 213,
+    "source": "SakilaProject\\src\\test\\java\\com\\sparta\\engineering72\\sakilaproject\\SakilaProjectApplicationTests.java",
+    "content": "package com.sparta.engineering72.sakilaproject;\r\n\r\nimport com.sparta.engineering72.sakilaproject.controller.MainController;\r\nimport org.junit.Test;\r\n\r\nimport static org.junit.jupiter.api.Assertions.assertEquals;\r\n\r\n\r\npublic class SakilaProjectApplicationTests {\r\n\r\n    @Test\r\n    public void MainController1() {\r\n        MainController mainController = new MainController();\r\n        String result = mainController.home();\r\n        assertEquals(result, \"home\");\r\n    }\r\n\r\n    @Test\r\n    public void MainController2() {\r\n        MainController mainController = new MainController();\r\n        String result = mainController.account();\r\n        assertEquals(result, \"account\");\r\n    }\r\n\r\n    @Test\r\n    public void MainController3() {\r\n        MainController mainController = new MainController();\r\n        String result = mainController.login();\r\n        assertEquals(result, \"login\");\r\n    }\r\n\r\n}"
+  }
+]

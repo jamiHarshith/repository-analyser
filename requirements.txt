@@ -1,0 +1,8 @@
+llama-index==0.12.30
+beautifulsoup4
+openai
+requests
+tqdm
+python-docx
+PyMuPDF
+openrouter
